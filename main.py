@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
+app.static_folder = 'static'
 
 @app.route("/")
 def index():
@@ -9,17 +10,9 @@ def index():
     return render_template("index.html", ip_address=ip_address)
 
 
-@app.route("/about")
-def about():
-    return "Страница о сайте!"
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
 
-@app.route("/Dany")
-def Dany():
-    return render_template("dany.html")
-
-
-@app.route("/yarik")
-def yaroslav():
-    return render_template("yaroslav.html")
 
 app.run(debug=True)
