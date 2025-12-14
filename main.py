@@ -12,5 +12,8 @@ def index():
 def about():
     return "Страница о сайте!"
 
+@app.route("/Dany")
+def Dany():
+    return "Страница Дани"
 
 app.run(debug=True)
