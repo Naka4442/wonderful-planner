@@ -1,11 +1,12 @@
-from flask import Flask
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    ip_address = request.remote_addr
+    return render_template("index.html", ip_address=ip_address)
 
 
 @app.route("/about")
@@ -14,11 +15,11 @@ def about():
 
 @app.route("/Dany")
 def Dany():
-    return "Страница Дани"
+    return render_template("dany.html")
 
 
 @app.route("/yarik")
 def yaroslav():
-    return "Страница Ярика!"
+    return render_template("yaroslav.html")
 
 app.run(debug=True)
