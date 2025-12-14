@@ -16,4 +16,9 @@ def about():
 def Dany():
     return "Страница Дани"
 
+
+@app.route("/yarik")
+def yaroslav():
+    return "Страница Ярика!"
+
 app.run(debug=True)
