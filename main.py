@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request
+from models import get_db, engine, Base, User
 
+
+Base.metadata.create_all(engine)
 
 app = Flask(__name__)
 app.static_folder = 'static'

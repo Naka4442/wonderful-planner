@@ -10,6 +10,7 @@ click==8.3.1
 colorama==0.4.6
 Flask==3.1.2
 frozenlist==1.8.0
+greenlet==3.3.0
 idna==3.11
 itsdangerous==2.2.0
 Jinja2==3.1.6
@@ -19,6 +20,9 @@ multidict==6.7.0
 propcache==0.4.1
 pydantic==2.12.5
 pydantic_core==2.41.5
+PyMySQL==1.1.2
+python-dotenv==1.2.1
+SQLAlchemy==2.0.45
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 Werkzeug==3.1.4
