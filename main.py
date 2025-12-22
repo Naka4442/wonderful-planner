@@ -17,5 +17,9 @@ def index():
 def signup():
     return render_template("signup.html")
 
+@app.route("/signin")
+def signin():
+    return render_template("signin.html")
+
 
 app.run(debug=True)
