@@ -23,8 +23,11 @@ with get_db() as db:
             email = request.form.get("email")
             password = request.form.get("password")
             password2 = request.form.get("password2")
-            user_services.signup(name, email, password, password2)
-            return redirect("/")
+            try:
+                user_services.signup(name, email, password, password2)
+                return redirect("/")
+            except ValueError as e:
+                return render_template("signup.html", error=str(e))
         elif request.method == "GET":
             return render_template("signup.html")
 

@@ -16,6 +16,7 @@
             <input type="password" name="password2" placeholder="Повторите пароль">
             <button type="submit">Регистрация</button>
         </form>
+        {% if error %} <p> {{ error }} </p> {% endif %}
     </main>
 </body>
 </html>
