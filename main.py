@@ -31,9 +31,18 @@ with get_db() as db:
         elif request.method == "GET":
             return render_template("signup.html")
 
-    @app.route("/signin")
+    @app.route("/signin", methods = ["GET", "POST"])
     def signin():
-        return render_template("signin.html")
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
+            try:
+                user_services.signin( email, password)
+                return redirect("/")
+            except ValueError as e:
+                return render_template("signin.html", error=str(e))
+        elif request.method == "GET":
+            return render_template("signin.html")
 
 
     app.run(debug=True)
