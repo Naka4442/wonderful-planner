@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}">
-    <title>Регистрация</title>
+    <title>Вход</title>
 </head>
 <body>
     <main>
-        <form action="">
+        <form action="" method="post">
             <h1>Вход</h1>
-            <input type="text" name="" id="" placeholder="Почта">
-            <input type="password" name="" placeholder="Пароль">
+            <input type="text" name="name" id="" placeholder="Имя">
+            <input type="password" name="password" placeholder="Пароль">
             <button type="submit">Вход</button>
         </form>
+        {% if error %} <p> {{ error }} </p> {% endif %}
     </main>
 </body>
 </html>
