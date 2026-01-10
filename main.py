@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from models import get_db, engine, Base, User
-from services import UserServices
+from services import UserServices, TaskServices
 from dotenv import load_dotenv
 import os
 
@@ -9,6 +9,9 @@ Base.metadata.create_all(engine)
 load_dotenv()
 with get_db() as db:
     user_services = UserServices(db)
+    task_services = TaskServices(db)
+    
+    # task_services.create("Сделать домашку", 4, "1) русский 2) математика", 5, 3600)
 
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')

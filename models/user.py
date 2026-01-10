@@ -11,4 +11,3 @@ class User(Base):
     password = Column(Text)
     name = Column(String(255))
     created = Column(DateTime, default=datetime.now)
-    
