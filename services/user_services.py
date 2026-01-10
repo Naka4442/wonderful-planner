@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from models import User
+from flask import session
 
 
 class UserServices:
@@ -21,3 +22,5 @@ class UserServices:
         user = self.db.query(User).filter(User.email == email, User.password == password).first()
         if not user:
             raise ValueError("Пользователь не найден")
+        session["user_id"] = user.id
+        session["user_name"] = user.name
