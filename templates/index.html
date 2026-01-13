@@ -22,7 +22,13 @@
             <a href="/create" id = "create-task">Создать задачу</a>
         </div>
         <div class="tasks">
+            {% for task in tasks %} 
             <div class="task">
+                <h4>{{ task.title }}</h4>
+                <input class="check" type="checkbox" id="">
+            </div>
+            {% endfor %}
+            <!-- <div class="task">
                 <h4>Помыть посуду</h4>
                 <input class="check" type="checkbox" id="">
             </div>
@@ -41,7 +47,7 @@
             <div class="task">
                 <h4>Помыть посуду</h4>
                 <input class="check" type="checkbox" id="">
-            </div>
+            </div> -->
         </div>
     </main>
 </body>

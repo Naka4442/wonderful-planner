@@ -10,15 +10,16 @@
 </head>
 <body>
     <header>
-        <div></div>
-        <h1>Главная</h1>
+        <div>
+            <a href="/">Назад</a>
+        </div>
+        <h1>Добавление задачи</h1>
         <div class="profile">
             <a href="/profile">{{ user_name }} </a>
         </div>
     </header>
     <main>
          <form action="" method="post">
-            <h1>Создание задачи</h1>
             <input type="text" name="title" id="" placeholder="Название">
             <textarea name="description" id="" placeholder="Описание задачи"></textarea>
             <input type="number"name="difficulty" min="1" max="10" placeholder="Сложность от 1 до 10">
@@ -31,7 +32,7 @@
             <input type="datetime-local" name="start-time" id="start-time">
             <label for="start-time">Время конца</label>
             <input type="datetime-local" name="end-time" id="end-time">
-            <button type="submit">Регистрация</button>
+            <button type="submit">Добавить</button>
         </form>
     </main>
 
