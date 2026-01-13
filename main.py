@@ -19,10 +19,11 @@ with get_db() as db:
     def index():
         if "user_id" in session:
             user_name = session["user_name"]
+            tasks = task_services.get_all(session["user_id"])
         else:
             user_name = "Не вошел"
-        ip_address = request.remote_addr
-        return render_template("index.html", ip_address=ip_address, user_name=user_name)
+            tasks = []
+        return render_template("index.html", user_name=user_name, tasks=tasks)
 
 
 

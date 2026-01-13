@@ -23,3 +23,7 @@ class TaskServices:
         )
         self.db.add(task)
         self.db.commit()
+        
+    def get_all(self, user_id: int):
+        tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
+        return tasks
