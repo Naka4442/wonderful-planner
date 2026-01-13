@@ -46,17 +46,28 @@ main{
     border-radius: 5px;
 }
 #create-task{
-    width: 11%;
-    height: 25px;
+    display: block;
+    width: 200px;
+    height: 40px;
     color: black;
 
     background-color: #187bcd;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.426);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-decoration: none;
+    font-weight: 600;
+}
+#filler{
+    width: 200px;
 }
 
 .top-menu{
-    width: 75%;
+    width: calc(75% + 40px);
     display: flex;
     align-items: center;
     justify-content: space-between;
