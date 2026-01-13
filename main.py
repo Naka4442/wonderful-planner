@@ -57,4 +57,9 @@ with get_db() as db:
             return render_template("signin.html")
 
 
+    @app.route("/create")
+    def create():
+        return render_template("create.html")
+
+
     app.run(debug=True)
