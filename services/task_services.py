@@ -12,14 +12,18 @@ class TaskServices:
         user_id: int, 
         description: str, 
         difficulty: int, 
-        supposed_time: int
+        supposed_time: int,
+        start_time: str = None,
+        end_time: str = None
     ):
         task = Task(
             title=title, 
             user_id=user_id, 
             description=description, 
             difficulty=difficulty, 
-            supposed_time=supposed_time
+            supposed_time=supposed_time,
+            start_time=start_time,
+            end_time=end_time
         )
         self.db.add(task)
         self.db.commit()
