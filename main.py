@@ -10,8 +10,6 @@ load_dotenv()
 with get_db() as db:
     user_services = UserServices(db)
     task_services = TaskServices(db)
-    
-    # task_services.create("Сделать домашку", 4, "1) русский 2) математика", 5, 3600)
 
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
@@ -59,7 +57,10 @@ with get_db() as db:
 
     @app.route("/create")
     def create():
-        return render_template("create.html")
+        if request.method == "POST":
+            ...
+        elif request.method == "GET":
+            return render_template("create.html")
 
 
     app.run(debug=True)
