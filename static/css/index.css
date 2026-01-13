@@ -45,6 +45,15 @@ main{
     padding: 0;
     border-radius: 5px;
 }
+#create-task{
+    width: 11%;
+    height: 25px;
+    color: black;
+
+    background-color: #187bcd;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.426);
+}
 
 .top-menu{
     width: 75%;
