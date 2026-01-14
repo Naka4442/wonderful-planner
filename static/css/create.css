@@ -87,6 +87,23 @@ button{
     border-bottom: 5px solid #0d4573;
     cursor: pointer;
 }
+#return{
+ display: block;
+    width: 200px;
+    height: 40px;
+    color: black;
+
+    background-color: #187bcd;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.426);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-decoration: none;
+    font-weight: 600;
+}
 
 button:active{
     box-shadow: 0 0 10px black inset;
