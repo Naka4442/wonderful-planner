@@ -34,6 +34,17 @@
             {% endfor %}
         </div>
     </main>
+    <section class="modal hidden">
+        <div class="check-task-modal">
+            <h3>Завершение задачи</h3>
+            <h4 class="check-task-modal-title"></h4>
+            <div class="time-block">
+                <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
+                <input type="number" name="time-minutes" id="" min="0" max="59" placeholder="Минуты">
+            </div>
+            <button class="check-task-modal-button">Завершить</button>
+        </div>
+    </section>
     <script src="{{ url_for('static', filename='js/check_task.js') }}"></script>
 </body>
 </html>
