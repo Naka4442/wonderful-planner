@@ -31,3 +31,11 @@ class TaskServices:
     def get_all(self, user_id: int):
         tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
         return tasks
+    
+    def check_task(self, task_id: int, minutes: int, user_id: int):
+        task = self.db.query(Task).filter(Task.id == task_id).first()
+        if task.user_id != user_id:
+            raise ValueError("Вы не можете завершить не вашу задачу")
+        task.actual_time = minutes
+        task.is_done = True
+        self.db.commit()

@@ -9,6 +9,22 @@ const taskCheckButton = document.querySelector(".check-task-modal-button");
 
 let activeTaskId;
 
+const checkTask = async (taskId, minutes) => {
+    const response = await fetch('/check', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ taskId: taskId, minutes: minutes })
+    });
+    if(response.ok){
+        location.reload();
+    }
+    else{
+        console.log(response);
+    }
+}
+
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener("input", (e) => {
         e.target.checked = false;
@@ -25,8 +41,9 @@ modal.addEventListener("click", (e) => {
     }
 })
 
-taskCheckButton.addEventListener("click", (e) => {
+taskCheckButton.addEventListener("click", async (e) => {
     const taskTime = Number(taskHoursElement.value) * 60 + Number(taskMinutesElement.value);
     console.log(activeTaskId, taskTime);
+    await checkTask(activeTaskId, taskTime);
     modal.classList.add("hidden");
 })

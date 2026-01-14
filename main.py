@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, jsonify, render_template, request, redirect, session
 from models import get_db, engine, Base, User
 from services import UserServices, TaskServices
 from dotenv import load_dotenv
@@ -91,5 +91,15 @@ with get_db() as db:
         elif request.method == "GET":
             return render_template("create.html", user_name=user_name)
 
+    @app.route("/check", methods=["POST"])
+    def check():
+        body = request.get_json()
+        task_id = body.get("taskId")
+        minutes = body.get("minutes")
+        try:
+            task_services.check_task(int(task_id), int(minutes), session["user_id"])
+            return redirect("/")
+        except ValueError as e:
+            return jsonify({"error": str(e)})
 
     app.run(debug=True)
