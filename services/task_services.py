@@ -31,6 +31,14 @@ class TaskServices:
     def get_all(self, user_id: int):
         tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
         return tasks
+
+    def get_difference(self, user_id: int):
+        difference = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id, Task.is_done == 1).all()
+        for task in tasks:
+            difference += abs(task.supposed_time - task.actual_time)
+        return difference
+
     
     def check_task(self, task_id: int, minutes: int, user_id: int):
         task = self.db.query(Task).filter(Task.id == task_id).first()
