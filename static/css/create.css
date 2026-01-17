@@ -68,6 +68,7 @@ textarea{
     display: flex;
     gap: 10px;
     justify-content: space-between;
+
 }
 label{
     font-size: 20px;
@@ -75,16 +76,18 @@ label{
 .time-block>input{
     width: 195px;
 }
-.repeated-block{
+.repeated-time{
     width: 420px;
     display: flex;
     gap: 10px;
     align-items: center;
+
 }
 .repeated-block>input{
     width: 30px;
     height: 30px;
     border-radius: 5px;
+
 }
 button{
     width: 300px;
