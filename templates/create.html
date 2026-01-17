@@ -28,13 +28,34 @@
                 <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
                 <input type="number" name="time-minutes" id="" min="0" max="59" placeholder="Минуты">
             </div>
-            <label for="start-time">Время начала</label>
-            <input type="datetime-local" name="start-time" id="start-time">
-            <label for="start-time">Время конца</label>
-            <input type="datetime-local" name="end-time" id="end-time">
+            <div class="repeated-time">
+                <input type="checkbox" id="is_repeated"><label for="is_repeated">Повторяется</label>
+            </div>
+            <div class="not-repeated-block">
+                <label for="start-time">Время начала</label>
+                <input type="datetime-local" name="start-time" id="start-time">
+                <label for="start-time">Время конца</label>
+                <input type="datetime-local" name="end-time" id="end-time">
+            </div>
+            <div class="repeated-block hidden">
+                <label for="repeat_weekday">День недели</label>
+                <select name="repeat_weekday" id="repeat_weekday">
+                    <option value="1">Понедельник</option>
+                    <option value="2">Вторник</option>
+                    <option value="3">Среда</option>
+                    <option value="4">Четверг</option>
+                    <option value="5">Пятница</option>
+                    <option value="6">Суббота</option>
+                    <option value="7">Воскресенье</option>
+                </select>
+                <label for="repeat_time_start">Время начала</label>
+                <input type="time" name="repeat_time_start" id="repeat_time_start">
+                <label for="repeat_time_end">Время конца</label>
+                <input type="time" name="repeat_time_end" id="repeat_time_end">
+            </div>
             <button type="submit">Добавить</button>
         </form>
     </main>
-
+    <script src="{{ url_for('static', filename='js/create.js') }}"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey, Boolean, Time
 from datetime import datetime
 from models.base import Base
 
@@ -15,6 +15,11 @@ class Task(Base):
     
     start_time = Column(DateTime, default=None, nullable=True)
     end_time = Column(DateTime, default=None, nullable=True)
+    
+    is_repeated = Column(Boolean, default=False)
+    repeat_time_start = Column(Time, nullable=True, default=None)
+    repeat_time_end = Column(Time, nullable=True, default=None)
+    repeat_weekday = Column(Integer, nullable=True, default=None)
     
     user_id = Column(Integer, ForeignKey("users.id"))
     
