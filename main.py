@@ -85,6 +85,11 @@ with get_db() as db:
             start_time = request.form.get("start-time")
             end_time = request.form.get("end-time")
             
+            is_repeated = bool(request.form.get("is_repeated"))
+            repeat_time_start = request.form.get("repeat_time_start")
+            repeat_time_end = request.form.get("repeat_time_end")
+            repeat_weekday = int(request.form.get("repeat_weekday"))
+            
             try:
                 task_services.create(
                     title, 
@@ -92,6 +97,10 @@ with get_db() as db:
                     description, 
                     difficulty, 
                     supposed_time,
+                    is_repeated,
+                    repeat_time_start if len(repeat_time_start) > 0 else None,
+                    repeat_time_end if len(repeat_time_end) > 0 else None,
+                    repeat_weekday,
                     start_time if len(start_time) > 0 else None,
                     end_time if len(end_time) > 0 else None
                 )

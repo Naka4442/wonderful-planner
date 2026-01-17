@@ -13,18 +13,36 @@ class TaskServices:
         description: str, 
         difficulty: int, 
         supposed_time: int,
+        is_repeated: bool = False,
+        repeat_time_start: str = None,
+        repeat_time_end: str = None,
+        repeat_weekday: int = None,
         start_time: str = None,
         end_time: str = None
     ):
-        task = Task(
-            title=title, 
-            user_id=user_id, 
-            description=description, 
-            difficulty=difficulty, 
-            supposed_time=supposed_time,
-            start_time=start_time,
-            end_time=end_time
-        )
+        if is_repeated:
+            task = Task(
+                title=title, 
+                user_id=user_id, 
+                description=description, 
+                difficulty=difficulty, 
+                supposed_time=supposed_time,
+                is_repeated=is_repeated,
+                repeat_time_start=repeat_time_start,
+                repeat_time_end=repeat_time_end,
+                repeat_weekday=repeat_weekday,
+            )
+        else:
+            task = Task(
+                title=title, 
+                user_id=user_id, 
+                description=description, 
+                difficulty=difficulty,
+                is_repeated=is_repeated,
+                supposed_time=supposed_time,
+                start_time=start_time,
+                end_time=end_time
+            )
         self.db.add(task)
         self.db.commit()
         
