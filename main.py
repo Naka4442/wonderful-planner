@@ -100,6 +100,19 @@ with get_db() as db:
                 return render_template("create.html", error=str(e), user_name=user_name)
         elif request.method == "GET":
             return render_template("create.html", user_name=user_name)
+        
+
+
+    @app.route("/profile")
+    def profile():
+        if "user_id" in session:
+            user_name = session["user_name"]
+        else:
+            return redirect("/signin")
+        return render_template(
+            "profile.html", 
+            user_name=user_name, 
+        )
 
     @app.route("/check", methods=["POST"])
     def check():
