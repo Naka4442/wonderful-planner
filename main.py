@@ -113,47 +113,24 @@ with get_db() as db:
 
     @app.route("/weekly", methods = ["GET", "POST"])
     def weekly():
-        if "user_id" not in session:
-            return redirect("/signin")
-        
-        user_name = session["user_name"]
-        if request.method == "POST":
-            title = request.form.get("title")
-            description = request.form.get("description")
-            difficulty = request.form.get("difficulty")
-            
-            supposed_hours = request.form.get("time-hours")
-            supposed_minutes = request.form.get("time-minutes")
-            
-            supposed_time = int(supposed_hours) * 60 + int(supposed_minutes)
-            
-            start_time = request.form.get("start-time")
-            end_time = request.form.get("end-time")
-            
-            is_repeated = bool(request.form.get("is_repeated"))
-            repeat_time_start = request.form.get("repeat_time_start")
-            repeat_time_end = request.form.get("repeat_time_end")
-            repeat_weekday = int(request.form.get("repeat_weekday"))
-            
-            try:
-                task_services.create(
-                    title, 
-                    session["user_id"], 
-                    description, 
-                    difficulty, 
-                    supposed_time,
-                    is_repeated,
-                    repeat_time_start if len(repeat_time_start) > 0 else None,
-                    repeat_time_end if len(repeat_time_end) > 0 else None,
-                    repeat_weekday,
-                    start_time if len(start_time) > 0 else None,
-                    end_time if len(end_time) > 0 else None
-                )
-                return redirect("/")
-            except ValueError as e:
-                return render_template("create.html", error=str(e), user_name=user_name)
-        elif request.method == "GET":
-            return render_template("create.html", user_name=user_name)
+        if "user_id" in session:
+            user_name = session["user_name"]
+            tasks = task_services.get_all(session["user_id"])
+            difference = task_services.get_difference(session["user_id"])
+
+        else:
+            user_name = "Не вошел"
+            tasks = []
+            difference = 0
+        undone = [task for task in tasks if not task.is_done]
+        done = [task for task in tasks if task.is_done]
+        return render_template(
+            "index.html",
+            user_name=user_name,
+            undone=undone,
+            done=done,
+            difference=difference
+        )
 
 
 
