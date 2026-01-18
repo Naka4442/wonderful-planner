@@ -199,7 +199,7 @@ main{
 }
 .time-slot{
     display: flex;
-    min-height: 60px;
+    height: 60px;
     border-bottom: 1px solid #187bcd;
     transition: background-color 0.2s ease;
 }
@@ -219,18 +219,19 @@ main{
 }
 .tasks-container{
     flex: 1;
-    padding: 10px 20px;
     position: relative;
 }
 .scheduled-task{
+    width: 100px;
     background-color: #187bcd;
     border-radius: 8px;
-    padding: 12px;
+    padding: 0 10px;
     margin-bottom: 5px;
     color: white;
     cursor: pointer;
+    margin-left: 20px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    position: relative;
+    position: absolute;
     overflow: hidden;
 }
 

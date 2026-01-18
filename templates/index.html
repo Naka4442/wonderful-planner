@@ -67,11 +67,14 @@
                         <div 
                             class="scheduled-task"
                             style="
-                            height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute - task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}};
+                            height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute) - (task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}}px;
                             margin-top: {{ task.repeat_time_start.minute }}px;
                             "
                         >
                             <div class="task-title">{{task.title}}</div>
+                            <div class="task-time">
+                                {{ task.repeat_time_start.strftime("%H:%M") }} - {{ task.repeat_time_end.strftime("%H:%M") }}
+                            </div>
                         </div>
                         {% endif %}
                     {% endfor %}
