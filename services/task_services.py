@@ -77,3 +77,8 @@ class TaskServices:
             ).order_by(Task.repeat_time_start).all()
         
         return repeated_tasks
+    
+    def get_not_repeated_tasks(self, user_id: int):
+        # TODO: Ярик сделать вывод неповторяющихся задач
+        ...
+        

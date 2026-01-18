@@ -28,7 +28,7 @@ main{
     width: 75%;
 }
 .task{
-    width: 100%; 
+    width: 500px; 
     height: 50px;
     background-color: #187bcd;
     border-radius: 5px;
@@ -177,6 +177,18 @@ main{
 
 .plan-type-switch>a.active{
     background-color: #187bcd;
+}
+
+.tasks-main{
+    width: 75%;
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+}
+
+.tasks-container-block{
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-header{

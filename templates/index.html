@@ -25,64 +25,68 @@
             <a href="/" class="active">Дневной</a>
             <a href="/weekly">Недельный</a>
         </div>
-        <!-- <div class="tasks">
-            {% for task in undone %} 
-            <div class="task">
-                <h4>{{ task.title }}</h4>
-                <p>{{task.description}}</p>
-                <p>Сложность: {{task.difficulty}}</p>
-                <p>Время: {{task.supposed_time}}</p>
-                <input type="hidden" value="{{task.id}}" class="task-id">
-                <input class="check" type="checkbox" id="">
-            </div>
-            {% endfor %}
-        </div>
-        <h2>Выполненные</h2>
-        <div class="tasks">
-            {% for task in done %} 
-            <div class="task">
-                <h4>{{ task.title }}</h4>
-                <p>{{task.description}}</p>
-                <p>Сложность: {{task.difficulty}}</p>
-                <p>Время: {{task.actual_time}}</p>
-                <input type="hidden" value="{{task.id}}" class="task-id">
-            </div>
-            {% endfor %}
-        </div>
-    </main> -->
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <div class="time-column">Время</div>
-            <div class="tasks-column">Задачи</div>
-        </div>
-        <div class="calendar-body">
-            {% for hour in range(24) %}
-            <div class="time-slot">
-                <div class="time-label">
-                    {{hour}}:00
+        <div class="tasks-main">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <div class="time-column">Время</div>
+                    <div class="tasks-column">Задачи</div>
                 </div>
-                <div class="tasks-container">
-                    {% for task in schedule %}
-                        {% if task.repeat_time_start.hour == hour %}
-                        <div 
-                            class="scheduled-task"
-                            style="
-                            height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute) - (task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}}px;
-                            margin-top: {{ task.repeat_time_start.minute }}px;
-                            "
-                        >
-                            <div class="task-title">{{task.title}}</div>
-                            <div class="task-time">
-                                {{ task.repeat_time_start.strftime("%H:%M") }} - {{ task.repeat_time_end.strftime("%H:%M") }}
-                            </div>
+                <div class="calendar-body">
+                    {% for hour in range(24) %}
+                    <div class="time-slot">
+                        <div class="time-label">
+                            {{hour}}:00
                         </div>
-                        {% endif %}
+                        <div class="tasks-container">
+                            {% for task in schedule %}
+                                {% if task.repeat_time_start.hour == hour %}
+                                <div 
+                                    class="scheduled-task"
+                                    style="
+                                    height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute) - (task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}}px;
+                                    margin-top: {{ task.repeat_time_start.minute }}px;
+                                    "
+                                >
+                                    <div class="task-title">{{task.title}}</div>
+                                    <div class="task-time">
+                                        {{ task.repeat_time_start.strftime("%H:%M") }} - {{ task.repeat_time_end.strftime("%H:%M") }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+            <div class="tasks-container-block">
+                <div class="tasks">
+                    {% for task in undone %} 
+                    <div class="task">
+                        <h4>{{ task.title }}</h4>
+                        <p>{{task.description}}</p>
+                        <p>Сложность: {{task.difficulty}}</p>
+                        <p>Время: {{task.supposed_time}}</p>
+                        <input type="hidden" value="{{task.id}}" class="task-id">
+                        <input class="check" type="checkbox" id="">
+                    </div>
+                    {% endfor %}
+                </div>
+                <h2>Выполненные</h2>
+                <div class="tasks">
+                    {% for task in done %} 
+                    <div class="task">
+                        <h4>{{ task.title }}</h4>
+                        <p>{{task.description}}</p>
+                        <p>Сложность: {{task.difficulty}}</p>
+                        <p>Время: {{task.actual_time}}</p>
+                        <input type="hidden" value="{{task.id}}" class="task-id">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
     <section class="modal hidden">
         <div class="check-task-modal">
             <h3>Завершение задачи</h3>
