@@ -3,19 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/Weekly.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/weekly.css') }}">
     <title>Еженедельные задания</title>
 </head>
 <body>
     <header>
         <div></div>
-        <h1>Еженедельные задания</h1>
-        <div class="Weekly">
-            <a href="/weekly">{{ user_name }} </a>
+        <h1>Еженедельное планирование</h1>
+        <div class="profile">
+            <a href="/profile">{{ user_name }} </a>
         </div>
     </header>
-    <main>
 
+    <main>
+        <div class="top-menu">
+            <div id="filler">Суммарное расхождение во времени: {{difference}} мин</div>
+            <h2>Задачи</h2>
+            <a href="/create" id = "create-task">Создать задачу</a>
+        </div>
+        <div class="plan-type-switch">
+            <a href="/">Дневной</a>
+            <a href="/weekly" class="active">Недельный</a>
+        </div>
+        <div class="tasks">
+            {% for task in undone %} 
+            <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{task.description}}</p>
+                <p>Сложность: {{task.difficulty}}</p>
+                <p>Время: {{task.supposed_time}}</p>
+                <input type="hidden" value="{{task.id}}" class="task-id">
+                <input class="check" type="checkbox" id="">
+            </div>
+            {% endfor %}
+        </div>
+        <h2>Выполненные</h2>
+        <div class="tasks">
+            {% for task in done %} 
+            <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{task.description}}</p>
+                <p>Сложность: {{task.difficulty}}</p>
+                <p>Время: {{task.actual_time}}</p>
+                <input type="hidden" value="{{task.id}}" class="task-id">
+            </div>
+            {% endfor %}
+        </div>
     </main>
+    <section class="modal hidden">
+        <div class="check-task-modal">
+            <h3>Завершение задачи</h3>
+            <h4 class="check-task-modal-title"></h4>
+            <p>Укажите время выполнения</p>
+            <div class="time-block">
+                <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
+                <input type="number" name="time-minutes" id="time-minutes" min="0" max="59" placeholder="Минуты">
+            </div>
+            <button class="check-task-modal-button">Завершить</button>
+        </div>
+    </section>
 </body>
 </html>

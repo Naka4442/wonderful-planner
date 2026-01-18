@@ -125,7 +125,7 @@ with get_db() as db:
         undone = [task for task in tasks if not task.is_done]
         done = [task for task in tasks if task.is_done]
         return render_template(
-            "index.html",
+            "weekly.html",
             user_name=user_name,
             undone=undone,
             done=done,

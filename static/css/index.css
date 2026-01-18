@@ -143,3 +143,38 @@ main{
     text-decoration: none;
     font-weight: 600;
 }
+
+.plan-type-switch{
+    width: 400px;
+    height: 50px;
+    background-color: #eee;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.426);
+
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 50px;
+}
+
+.plan-type-switch>a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.plan-type-switch>a:hover{
+    background-color: #187bcd;
+}
+
+.plan-type-switch>a.active{
+    background-color: #187bcd;
+}
