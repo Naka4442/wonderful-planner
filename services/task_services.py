@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from models import Task
+from datetime import date
 
 
 class TaskServices:
@@ -65,3 +66,14 @@ class TaskServices:
         task.actual_time = minutes
         task.is_done = True
         self.db.commit()
+        
+    def get_schedule(self, user_id: int, day: date):
+        weekday = day.weekday() + 1
+        
+        repeated_tasks = self.db.query(Task).filter(
+                Task.user_id == user_id, 
+                Task.is_repeated == True,
+                Task.repeat_weekday == weekday
+            ).order_by(Task.repeat_time_start).all()
+        
+        return repeated_tasks

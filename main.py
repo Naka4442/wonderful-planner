@@ -1,3 +1,4 @@
+from datetime import date
 from flask import Flask, jsonify, render_template, request, redirect, session
 from models import get_db, engine, Base, User
 from services import UserServices, TaskServices
@@ -17,14 +18,14 @@ with get_db() as db:
 
     @app.route("/")
     def index():
-        if "user_id" in session:
-            user_name = session["user_name"]
-            tasks = task_services.get_all(session["user_id"])
-            difference = task_services.get_difference(session["user_id"])
-        else:
-            user_name = "Не вошел"
-            tasks = []
-            difference = 0
+        if "user_id"  not in session:
+            return redirect("/signin")
+
+        user_name = session["user_name"]
+        tasks = task_services.get_all(session["user_id"])
+        difference = task_services.get_difference(session["user_id"])
+        schedule = task_services.get_schedule(session["user_id"], date.today())
+        
         undone = [task for task in tasks if not task.is_done]
         done = [task for task in tasks if task.is_done]
         return render_template(
@@ -32,10 +33,31 @@ with get_db() as db:
             user_name=user_name, 
             undone=undone,
             done=done,
-            difference=difference
+            schedule=schedule,
+            difference=difference,
+            hours=list(range(7, 23))
         )
 
+    @app.route("/weekly")
+    def weekly():
+        if "user_id" in session:
+            user_name = session["user_name"]
+            tasks = task_services.get_all(session["user_id"])
+            difference = task_services.get_difference(session["user_id"])
 
+        else:
+            user_name = "Не вошел"
+            tasks = []
+            difference = 0
+        undone = [task for task in tasks if not task.is_done]
+        done = [task for task in tasks if task.is_done]
+        return render_template(
+            "weekly.html",
+            user_name=user_name,
+            undone=undone,
+            done=done,
+            difference=difference
+        )
 
     @app.route("/signup", methods = ["GET", "POST"])
     def signup():
@@ -77,8 +99,8 @@ with get_db() as db:
             description = request.form.get("description")
             difficulty = request.form.get("difficulty")
             
-            supposed_hours = request.form.get("time-hours")
-            supposed_minutes = request.form.get("time-minutes")
+            supposed_hours = request.form.get("time-hours") if request.form.get("time-hours") else 0
+            supposed_minutes = request.form.get("time-minutes") if request.form.get("time-minutes") else 0
             
             supposed_time = int(supposed_hours) * 60 + int(supposed_minutes)
             
@@ -111,26 +133,6 @@ with get_db() as db:
             return render_template("create.html", user_name=user_name)
         
 
-    @app.route("/weekly", methods = ["GET", "POST"])
-    def weekly():
-        if "user_id" in session:
-            user_name = session["user_name"]
-            tasks = task_services.get_all(session["user_id"])
-            difference = task_services.get_difference(session["user_id"])
-
-        else:
-            user_name = "Не вошел"
-            tasks = []
-            difference = 0
-        undone = [task for task in tasks if not task.is_done]
-        done = [task for task in tasks if task.is_done]
-        return render_template(
-            "weekly.html",
-            user_name=user_name,
-            undone=undone,
-            done=done,
-            difference=difference
-        )
 
 
 

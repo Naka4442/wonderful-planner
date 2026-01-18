@@ -178,3 +178,16 @@ main{
 .plan-type-switch>a.active{
     background-color: #187bcd;
 }
+
+.schedule{
+    display: flex;
+    flex-direction: column;
+}
+
+.hour-block{
+    height: 50px;
+    width: 50px;
+    border-bottom: 1px solid #187bcd;
+    display: flex;
+    align-items: center;
+}
