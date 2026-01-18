@@ -34,8 +34,7 @@ with get_db() as db:
             undone=undone,
             done=done,
             schedule=schedule,
-            difference=difference,
-            hours=list(range(7, 23))
+            difference=difference
         )
 
     @app.route("/weekly")

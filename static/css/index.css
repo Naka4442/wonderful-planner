@@ -179,15 +179,67 @@ main{
     background-color: #187bcd;
 }
 
-.schedule{
+.calendar-header{
     display: flex;
-    flex-direction: column;
+    border-bottom: 2px solid #187bcd;
+    padding: 0 20px;
+}
+.time-column{
+    width: 120px;
+    text-align: center;
+    font-weight: 600;
+    color: #2c3e50;
+    padding-left: 20px;
+}
+.tasks-column{
+    flex: 1;
+    padding-left: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.time-slot{
+    display: flex;
+    min-height: 60px;
+    border-bottom: 1px solid #187bcd;
+    transition: background-color 0.2s ease;
 }
 
-.hour-block{
-    height: 50px;
-    width: 50px;
-    border-bottom: 1px solid #187bcd;
+.time-slot:hover{
+    background-color: #f8fafc;
+}
+
+.time-label{
+    width: 120px;
     display: flex;
-    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    border-right: 2px solid #f8fafc;
+}
+.tasks-container{
+    flex: 1;
+    padding: 10px 20px;
+    position: relative;
+}
+.scheduled-task{
+    background-color: #187bcd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 5px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    position: relative;
+    overflow: hidden;
+}
+
+.scheduled-task::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: aqua;
 }

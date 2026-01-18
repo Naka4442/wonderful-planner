@@ -50,20 +50,36 @@
             {% endfor %}
         </div>
     </main> -->
-    <section class="schedule">
-        {% for hour in hours %}
-            <div class="hour-block">
-                <div class="hour">{{hour}}:00</div>
-                {% for task in schedule %}
-                    {% if task.repeat_time_start.hour  == hour %}
-                        <div class="schedule-task">
-                            <h4>{{ task.title }}</h4>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <div class="time-column">Время</div>
+            <div class="tasks-column">Задачи</div>
+        </div>
+        <div class="calendar-body">
+            {% for hour in range(24) %}
+            <div class="time-slot">
+                <div class="time-label">
+                    {{hour}}:00
+                </div>
+                <div class="tasks-container">
+                    {% for task in schedule %}
+                        {% if task.repeat_time_start.hour == hour %}
+                        <div 
+                            class="scheduled-task"
+                            style="
+                            height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute - task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}};
+                            margin-top: {{ task.repeat_time_start.minute }}px;
+                            "
+                        >
+                            <div class="task-title">{{task.title}}</div>
                         </div>
-                    {% endif %}
-                {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-        {%  endfor %}
-    </section>
+            {% endfor %}
+        </div>
+    </div>
     <section class="modal hidden">
         <div class="check-task-modal">
             <h3>Завершение задачи</h3>
