@@ -3,6 +3,7 @@ from flask import Flask, jsonify, render_template, request, redirect, session
 from models import get_db, engine, Base, User
 from services import UserServices, TaskServices
 from dotenv import load_dotenv
+from datetime import timedelta
 import os
 
 
@@ -18,12 +19,22 @@ with get_db() as db:
 
     @app.route("/")
     def index():
-        if "user_id"  not in session:
+        if "user_id" not in session:
             return redirect("/signin")
+
+        if request.args.get("date") is not None:
+            d = request.args.get("date").split("-")
+            day = date(
+                int(d[0]),
+                int(d[1]),
+                int(d[2])
+            )
+        else:
+            day = date.today()
 
         user_name = session["user_name"]
         difference = task_services.get_difference(session["user_id"])
-        schedule = task_services.get_schedule(session["user_id"], date.today())
+        schedule = task_services.get_schedule(session["user_id"], day)
         no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
         
         undone = [task for task in no_repeated_tasks if not task.is_done]
