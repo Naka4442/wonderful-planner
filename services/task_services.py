@@ -80,5 +80,9 @@ class TaskServices:
     
     def get_not_repeated_tasks(self, user_id: int):
         # TODO: Ярик сделать вывод неповторяющихся задач
-        ...
+        not_repeated_tasks = self.db.query(Task).filter(
+            Task.user_id == user_id,
+            Task.is_repeated == False
+        )
+        return not_repeated_tasks
         
