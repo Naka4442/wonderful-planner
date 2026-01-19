@@ -22,12 +22,12 @@ with get_db() as db:
             return redirect("/signin")
 
         user_name = session["user_name"]
-        tasks = task_services.get_all(session["user_id"])
         difference = task_services.get_difference(session["user_id"])
         schedule = task_services.get_schedule(session["user_id"], date.today())
+        no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
         
-        undone = [task for task in tasks if not task.is_done]
-        done = [task for task in tasks if task.is_done]
+        undone = [task for task in no_repeated_tasks if not task.is_done]
+        done = [task for task in no_repeated_tasks if task.is_done]
         return render_template(
             "index.html", 
             user_name=user_name, 
