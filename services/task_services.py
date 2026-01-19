@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models import Task
-from datetime import date
+from datetime import date, timedelta
 
 
 class TaskServices:
@@ -78,8 +78,17 @@ class TaskServices:
         
         return repeated_tasks
     
+    def get_week_schedule(self, user_id: int, monday: date):
+        sunday = monday + timedelta(days=6)
+        repeated_tasks = self.db.query(Task).filter(
+                Task.user_id == user_id, 
+                Task.is_repeated == True,
+                Task.repeat_time_start.between(monday, sunday)
+            ).order_by(Task.repeat_time_start).all()
+        
+        return repeated_tasks
+    
     def get_not_repeated_tasks(self, user_id: int):
-        # TODO: Ярик сделать вывод неповторяющихся задач
         not_repeated_tasks = self.db.query(Task).filter(
             Task.user_id == user_id,
             Task.is_repeated == False

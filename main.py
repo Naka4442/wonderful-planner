@@ -50,22 +50,29 @@ with get_db() as db:
 
     @app.route("/weekly")
     def weekly():
-        if "user_id" in session:
-            user_name = session["user_name"]
-            tasks = task_services.get_all(session["user_id"])
-            difference = task_services.get_difference(session["user_id"])
-
+        if "user_id" not in session:
+            return redirect("/signin")
+        
+        if request.args.get("date") is not None:
+            d = request.args.get("date").split("-")
+            day = date(
+                int(d[0]),
+                int(d[1]),
+                int(d[2])
+            )
         else:
-            user_name = "Не вошел"
-            tasks = []
-            difference = 0
-        undone = [task for task in tasks if not task.is_done]
-        done = [task for task in tasks if task.is_done]
+            day = date.today()
+        user_name = session["user_name"]
+        difference = task_services.get_difference(session["user_id"])
+        schedule = task_services.get_schedule(session["user_id"], day)
+        # undone = [task for task in tasks if not task.is_done]
+        # done = [task for task in tasks if task.is_done]
         return render_template(
             "weekly.html",
             user_name=user_name,
-            undone=undone,
-            done=done,
+            # undone=undone,
+            # done=done,
+            schedule=schedule,
             difference=difference
         )
 
