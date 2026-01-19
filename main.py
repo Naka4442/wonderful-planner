@@ -62,9 +62,10 @@ with get_db() as db:
             )
         else:
             day = date.today()
+        print(day)
         user_name = session["user_name"]
         difference = task_services.get_difference(session["user_id"])
-        schedule = task_services.get_schedule(session["user_id"], day)
+        schedule = task_services.get_week_schedule(session["user_id"])
         # undone = [task for task in tasks if not task.is_done]
         # done = [task for task in tasks if task.is_done]
         return render_template(

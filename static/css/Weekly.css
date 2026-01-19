@@ -178,3 +178,69 @@ main{
 .plan-type-switch>a.active{
     background-color: #187bcd;
 }
+
+.calendar-header{
+    display: flex;
+    border-bottom: 2px solid #187bcd;
+    padding: 0 20px;
+}
+.time-column{
+    width: 120px;
+    text-align: center;
+    font-weight: 600;
+    color: #2c3e50;
+    padding-left: 20px;
+}
+.tasks-column{
+    flex: 1;
+    padding-left: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.time-slot{
+    display: flex;
+    height: 60px;
+    border-bottom: 1px solid #187bcd;
+    transition: background-color 0.2s ease;
+}
+
+.time-slot:hover{
+    background-color: #f8fafc;
+}
+
+.time-label{
+    width: 120px;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    border-right: 2px solid #f8fafc;
+}
+.tasks-container{
+    flex: 1;
+    position: relative;
+}
+.scheduled-task{
+    width: 100px;
+    background-color: #187bcd;
+    border-radius: 8px;
+    padding: 0 10px;
+    margin-bottom: 5px;
+    color: white;
+    cursor: pointer;
+    margin-left: 20px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    position: absolute;
+    overflow: hidden;
+}
+
+.scheduled-task::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: aqua;
+}

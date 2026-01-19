@@ -78,12 +78,10 @@ class TaskServices:
         
         return repeated_tasks
     
-    def get_week_schedule(self, user_id: int, monday: date):
-        sunday = monday + timedelta(days=6)
+    def get_week_schedule(self, user_id: int):
         repeated_tasks = self.db.query(Task).filter(
                 Task.user_id == user_id, 
-                Task.is_repeated == True,
-                Task.repeat_time_start.between(monday, sunday)
+                Task.is_repeated == True
             ).order_by(Task.repeat_time_start).all()
         
         return repeated_tasks
