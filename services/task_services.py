@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from models import Task
 from datetime import date, timedelta
+from sqlalchemy import func
+
 
 
 class TaskServices:
@@ -51,12 +53,30 @@ class TaskServices:
         tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
         return tasks
 
-    def get_difference(self, user_id: int):
-        difference = 0
-        tasks = self.db.query(Task).filter(Task.user_id == user_id, Task.is_done == 1).all()
+    def get_time_difference_by_day(self, user_id: int, day:date):
+        day_difference = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id, func.date(Task.start_time) == day, Task.is_done == 1).all()
         for task in tasks:
-            difference += abs(task.supposed_time - task.actual_time)
-        return difference
+            day_difference += abs(task.supposed_time - task.actual_time)
+        return day_difference
+    def get_time_difference_by_week(self, user_id: int, day:date):
+        week_difference = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id,Task.start_time >= day,Task.start_time < day + timedelta(days=8), Task.is_done == 1).all()
+        for task in tasks:
+            week_difference += abs(task.supposed_time - task.actual_time)
+        return week_difference
+    def get_difficulty_by_week(self, user_id: int, day:date):
+        week_difficulty = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id,Task.start_time >= day,Task.start_time < day + timedelta(days=8), Task.is_done == 1).all()
+        for task in tasks:
+            week_difficulty += task.difficulty
+        return week_difficulty
+    def get_difficulty_by_day(self, user_id: int, day:date):
+        day_difficulty = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id, func.date(Task.start_time) == day, Task.is_done == 1).all()
+        for task in tasks:
+            day_difficulty += task.difficulty
+        return day_difficulty
 
     
     def check_task(self, task_id: int, minutes: int, user_id: int):
