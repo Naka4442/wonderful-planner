@@ -33,9 +33,9 @@ with get_db() as db:
             day = date.today()
 
         user_name = session["user_name"]
-        day_difference = task_services.get_time_difference_by_day(session["user_id"], day)
-
-        day_difficulty = task_services.get_difficulty_by_day(session["user_id"], day)
+        
+        difference = task_services.get_time_difference_by_day(session["user_id"], day)
+        difficulty = task_services.get_difficulty_by_day(session["user_id"], day)
 
         schedule = task_services.get_schedule(session["user_id"], day)
         no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
@@ -48,10 +48,10 @@ with get_db() as db:
             undone=undone,
             done=done,
             schedule=schedule,
-            day_difference=day_difference,
-
-            day_difficulty=day_difficulty,
-
+            count_done=len(done),
+            count_undone=len(undone),
+            difference=difference,
+            difficulty=difficulty,
         )
 
     @app.route("/weekly")

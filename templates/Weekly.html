@@ -47,8 +47,8 @@
                         {{hour}}:00
                     </div>
                     <div class="tasks-container">
-                        {% for weekday in range(1, 8) %}
-                            {% for task in schedule %}
+                        {% for task in schedule %}
+                            {% for weekday in range(1, 8) %}
                                 {% if task.repeat_time_start.hour == hour and task.repeat_weekday == weekday %}
                                 <div 
                                     class="scheduled-task"
@@ -62,10 +62,10 @@
                                         {{ task.repeat_time_start.strftime("%H:%M") }} - {{ task.repeat_time_end.strftime("%H:%M") }}
                                     </div>
                                 </div>
+                                {% else %}
+                                <div class="empty-slot" style="width: 120px;"></div>
                                 {% endif %}
                             {% endfor %}
-                            {% else %}
-                            <div class="empty-slot" style="width: 120px;"></div>
                         {% endfor %}
                     </div>
                 </div>

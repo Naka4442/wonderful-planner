@@ -30,10 +30,40 @@ main{
 .stats{
     width: 750px;
     height: 100px;
+    padding: 10px;
     background-color: #66c0f4;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.426);
 
+    display: flex;
+    margin-bottom: 25px;
+}
+.stats-item{
+    width: 250px;
+
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.stats-item>img{
+    width:50px;
+    height: 50px;
+}
+.time-d{
+    /* text-align: center; */
+    font-size: 14px;
+}
+.stat-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+}
+.stat-value{
+    font-size: 25px;
+    font-weight: 600;
 }
 .task{
     width: 500px; 

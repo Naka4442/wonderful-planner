@@ -19,7 +19,7 @@
         <div class="top-menu">
             <div id="filler"></div>
             <h2>Задачи</h2>
-            <a href="/create" id = "create-task">Создать задачу</a>
+            <a href="/create" id="create-task">Создать задачу</a>
         </div>
         <div class="plan-type-switch">
             <a href="/" class="active">Дневной</a>
@@ -30,12 +30,27 @@
             <input type="date" id="select-day">
         </div>
         <div class="stats">
-            <div class="time-d">Суммарное расхождение во времени: {{difference}} мин</div>
-            <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
-            <div class="time-d">Общее время выполнения задач: 10</div>
-            <img src="{{ url_for('static', filename='images/done.png') }}" alt="">
-            <div class="time-d">Общая сложность задач: 15 </div>
-            <img src="{{ url_for('static', filename='images/speedometer.png') }}" alt="">
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
+                <div class="stat-text">
+                    <div class="time-d">Среднее расхождение:</div>
+                    <div class="stat-value">{{ difference / count_done }} мин</div> 
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/done.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Количество выполненных:</div>
+                    <div class="stat-value">{{ count_done }}</div>
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/speedometer.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Средняя сложность задач:</div>
+                    <div class="stat-value">{{ difficulty / count_done }}</div>
+                </div>
+            </div>
         </div>
         <div class="tasks-main">
             <div class="calendar-container">
