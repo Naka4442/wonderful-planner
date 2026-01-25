@@ -11,7 +11,7 @@ main{
 
 form{
     width: 500px;
-    height: 400px;
+    height: 750px;
     background-color: #66c0f4;
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
@@ -47,4 +47,8 @@ button:active{
     box-shadow: 0 0 10px black inset;
     border-bottom: none;
     transition: 0.5s;
+}
+
+label{
+    width: 400px;
 }
