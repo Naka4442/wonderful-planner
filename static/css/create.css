@@ -147,6 +147,30 @@ button{
 
 }
 
+.event{
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+
+}
+.event>input{
+    width: 40px;
+}
+
+.task-block{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.start-time{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 button:active{
     box-shadow: 0 0 10px black inset;
     border-bottom: none;

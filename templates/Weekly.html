@@ -17,7 +17,7 @@
 
     <main>
         <div class="top-menu">
-            <div id="filler">Суммарное расхождение во времени: {{difference}} мин</div>
+            <div id="filler"></div>
             <h2>Задачи</h2>
             <a href="/create" id = "create-task">Создать задачу</a>
         </div>
@@ -28,6 +28,29 @@
         <div class="select-week">
             <label for="select-week">Выберите неделю: </label>
             <input type="week" id="select-week">
+        </div>
+        <div class="stats">
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
+                <div class="stat-text">
+                    <div class="time-d">Среднее расхождение:</div>
+                    <div class="stat-value">{{ difference / count_done }} мин</div>
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/done.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Количество выполненных:</div>
+                    <div class="stat-value">{{ count_done }}</div>
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/speedometer.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Средняя сложность задач:</div>
+                    <div class="stat-value">{{ difficulty / count_done }}</div>
+                </div>
+            </div>
         </div>
         <div class="calendar-container">
             <div class="calendar-header">

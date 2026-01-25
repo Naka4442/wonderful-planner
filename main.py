@@ -70,19 +70,22 @@ with get_db() as db:
             day = date.today()
         print(day)
         user_name = session["user_name"]
-        week_difference = task_services.get_time_difference_by_week(session["user_id"],day)
-        week_difficulty = task_services.get_difficulty_by_week(session["user_id"], day)
+        difference = task_services.get_time_difference_by_week(session["user_id"],day)
+        difficulty = task_services.get_difficulty_by_week(session["user_id"], day)
         schedule = task_services.get_week_schedule(session["user_id"])
-        # undone = [task for task in tasks if not task.is_done]
-        # done = [task for task in tasks if task.is_done]
+        no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
+        undone = [task for task in no_repeated_tasks if not task.is_done]
+        done = [task for task in no_repeated_tasks if task.is_done]
         return render_template(
             "weekly.html",
             user_name=user_name,
-            # undone=undone,
-            # done=done,
+            undone=undone,
+            done=done,
             schedule=schedule,
-            week_difficulty=week_difficulty,
-            week_difference=week_difference
+            count_done=len(done),
+            count_undone=len(undone),
+            difficulty=difficulty,
+            difference=difference
         )
 
     @app.route("/signup", methods = ["GET", "POST"])

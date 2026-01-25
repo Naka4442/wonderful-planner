@@ -20,44 +20,62 @@
     </header>
     <main>
          <form action="" method="post">
+             <div class="event">
+                 <label for="event">Мероприятие</label><input type="radio" name = "event" id = "event" value = "1" >
+                 <label for="task">Задача</label><input type="radio" name = "event" id = "task" value = "0" >
+             </div>
+
+
             <input type="text" name="title" id="" placeholder="Название">
             <textarea name="description" id="" placeholder="Описание задачи"></textarea>
-            <input type="number"name="difficulty" min="1" max="10" placeholder="Сложность от 1 до 10">
+            <input type="number" name="difficulty" min="1" max="10" placeholder="Сложность от 1 до 10">
 
-
-            <div class="repeated-time">
+            <div class="event-block hidden">
+                <div class="repeated-time">
                 <input type="checkbox" id="is_repeated" name="is_repeated">
                 <label for="is_repeated">Повторяется</label>
-            </div>
-            <div class="not-repeated-block">
-                <label for="time-hours">Предполагаемое время выполнения</label>
-                <div class="time-block">
-                <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
-                <input type="number" name="time-minutes" id="" min="0" max="59" placeholder="Минуты">
                 </div>
-                <label for="start-time">Время начала</label>
-                <input type="datetime-local" name="start-time" id="start-time">
-                <label for="start-time">Время конца</label>
-                <input type="datetime-local" name="end-time" id="end-time">
-            </div>
-            <div class="repeated-block hidden">
-                <div class="weekday"><label for="repeat_weekday">День недели</label>
-                <select name="repeat_weekday" id="repeat_weekday">
-                    <option value="1">Понедельник</option>
-                    <option value="2">Вторник</option>
-                    <option value="3">Среда</option>
-                    <option value="4">Четверг</option>
-                    <option value="5">Пятница</option>
-                    <option value="6">Суббота</option>
-                    <option value="7">Воскресенье</option>
-                </select>
-                </div>
+                <div class="not-repeated-block">
 
-                <label for="repeat_time_start">Время начала</label>
-                <input type="time" name="repeat_time_start" id="repeat_time_start">
-                <label for="repeat_time_end">Время конца</label>
-                <input type="time" name="repeat_time_end" id="repeat_time_end">
+                    <label for="start-time">Время начала</label>
+                    <input type="datetime-local" name="start-time" id="start-time">
+                    <label for="start-time">Время конца</label>
+                    <input type="datetime-local" name="end-time" id="end-time">
+                </div>
+                <div class="repeated-block hidden">
+                    <div class="weekday"><label for="repeat_weekday">День недели</label>
+                    <select name="repeat_weekday" id="repeat_weekday">
+                        <option value="1">Понедельник</option>
+                        <option value="2">Вторник</option>
+                        <option value="3">Среда</option>
+                        <option value="4">Четверг</option>
+                        <option value="5">Пятница</option>
+                        <option value="6">Суббота</option>
+                        <option value="7">Воскресенье</option>
+                    </select>
+                    </div>
+
+                    <label for="repeat_time_start">Время начала</label>
+                    <input type="time" name="repeat_time_start" id="repeat_time_start">
+                    <label for="repeat_time_end">Время конца</label>
+                    <input type="time" name="repeat_time_end" id="repeat_time_end">
+                </div>
             </div>
+             <div class="task-block">
+                <label for="time-hours">Предполагаемое время выполнения</label>
+                    <div class="time-block">
+                    <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
+                    <input type="number" name="time-minutes" id="" min="0" max="59" placeholder="Минуты">
+                    </div>
+                 <div class="start-time">
+                     <label for="start-time">Дата начала</label>
+                     <input type="date" name="start-time" id="start-date">
+                     <label for="time-start">Время начала</label>
+                     <input type="time" name="start-time" id="time-start">
+                 </div>
+
+             </div>
+
             <button type="submit">Добавить</button>
         </form>
     </main>
