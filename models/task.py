@@ -16,6 +16,7 @@ class Task(Base):
     start_time = Column(DateTime, default=None, nullable=True)
     end_time = Column(DateTime, default=None, nullable=True)
     
+    is_event = Column(Boolean, nullable=True)
     is_repeated = Column(Boolean, default=False)
     repeat_time_start = Column(Time, nullable=True, default=None)
     repeat_time_end = Column(Time, nullable=True, default=None)
