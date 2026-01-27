@@ -128,8 +128,8 @@ def signin():
             user_services = UserServices(db)
             try:
                 user = user_services.signin(email, password)
-                session["user_id"] = user.id
-                session["user_name"] = user.name
+                session.update({"user_id": user.id})
+                session.update({"user_name": user.name})
                 return redirect("/")
             except ValueError as e:
                 return render_template("signin.html", error=str(e))
