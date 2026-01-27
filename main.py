@@ -198,6 +198,6 @@ with get_db() as db:
             return jsonify({"error": str(e)})
 
 
-    if __name__ == "__main__":
-        debug = os.getenv("FLASK_ENV", "production") == "development"
-        app.run(host="0.0.0.0", port=5000, debug=debug)
+if __name__ == "__main__":
+    debug = os.getenv("FLASK_ENV", "production") == "development"
+    app.run(host="0.0.0.0", port=5000, debug=debug)
