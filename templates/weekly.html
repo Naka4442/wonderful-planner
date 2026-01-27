@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/weekly.css') }}">
+    <title>Еженедельные задания</title>
+</head>
+<body>
+    <header>
+        <div></div>
+        <h1>Еженедельное планирование</h1>
+        <div class="profile">
+            <a href="/profile">{{ user_name }} </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="top-menu">
+            <div id="filler"></div>
+            <h2>Задачи</h2>
+            <a href="/create" id = "create-task">Создать задачу</a>
+        </div>
+        <div class="plan-type-switch">
+            <a href="/">Дневной</a>
+            <a href="/weekly" class="active">Недельный</a>
+        </div>
+        <div class="select-week">
+            <label for="select-week">Выберите неделю: </label>
+            <input type="week" id="select-week">
+        </div>
+        <div class="stats">
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
+                <div class="stat-text">
+                    <div class="time-d">Среднее расхождение:</div>
+                    {% if count_done > 0 %}
+                    <div class="stat-value">{{ difference / count_done }} мин</div>
+                    {% else %}
+                    <div class="stat-value">0 мин</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/done.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Количество выполненных:</div>
+                    {% if count_done > 0 %}
+                    <div class="stat-value">{{ count_done }}</div>
+                    {% else %}
+                    <div class="stat-value">0</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="stats-item">
+                <img src="{{ url_for('static', filename='images/speedometer.png') }}" alt="">
+                <div class="stat-text">
+                    <div class="time-d">Средняя сложность задач:</div>
+                    {% if count_done > 0 %}
+                    <div class="stat-value">{{ difficulty / count_done }}</div>
+                    {% else %}
+                    <div class="stat-value">0</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="time-column">Время</div>
+                <div class="tasks-column">Понедельник</div>
+                <div class="tasks-column">Вторник</div>
+                <div class="tasks-column">Среда</div>
+                <div class="tasks-column">Четверг</div>
+                <div class="tasks-column">Пятница</div>
+                <div class="tasks-column">Суббота</div>
+                <div class="tasks-column">Воскресенье</div>
+            </div>
+            <div class="calendar-body">
+                {% for hour in range(24) %}
+                <div class="time-slot">
+                    <div class="time-label">
+                        {{hour}}:00
+                    </div>
+                    <div class="tasks-container">
+                        {% for task in schedule %}
+                            {% for weekday in range(1, 8) %}
+                                {% if task.repeat_time_start.hour == hour and task.repeat_weekday == weekday %}
+                                <div 
+                                    class="scheduled-task"
+                                    style="
+                                    height: {{ (task.repeat_time_end.hour * 60 + task.repeat_time_end.minute) - (task.repeat_time_start.hour * 60 + task.repeat_time_start.minute)}}px;
+                                    margin-top: {{ task.repeat_time_start.minute }}px;
+                                    "
+                                >
+                                    <div class="task-title">{{task.title}}</div>
+                                    <div class="task-time">
+                                        {{ task.repeat_time_start.strftime("%H:%M") }} - {{ task.repeat_time_end.strftime("%H:%M") }}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="empty-slot" style="width: 120px;"></div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tasks">
+            {% for task in undone %} 
+            <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{task.description}}</p>
+                <p>Сложность: {{task.difficulty}}</p>
+                <p>Время: {{task.supposed_time}}</p>
+                <input type="hidden" value="{{task.id}}" class="task-id">
+                <input class="check" type="checkbox" id="">
+            </div>
+            {% endfor %}
+        </div>
+        <h2>Выполненные</h2>
+        <div class="tasks">
+            {% for task in done %} 
+            <div class="task">
+                <h4>{{ task.title }}</h4>
+                <p>{{task.description}}</p>
+                <p>Сложность: {{task.difficulty}}</p>
+                <p>Время: {{task.actual_time}}</p>
+                <input type="hidden" value="{{task.id}}" class="task-id">
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+    <section class="modal hidden">
+        <div class="check-task-modal">
+            <h3>Завершение задачи</h3>
+            <h4 class="check-task-modal-title"></h4>
+            <p>Укажите время выполнения</p>
+            <div class="time-block">
+                <input type="number" name="time-hours" id="time-hours" min="0" placeholder="Часы">
+                <input type="number" name="time-minutes" id="time-minutes" min="0" max="59" placeholder="Минуты">
+            </div>
+            <button class="check-task-modal-button">Завершить</button>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='js/select_week.js') }}"></script>
+</body>
+</html>
