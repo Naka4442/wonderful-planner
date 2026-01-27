@@ -12,6 +12,30 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
 app.static_folder = 'static'
 
+app.config['SESSION_COOKIE_DOMAIN'] = None  # None - для всех доменов
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False  # True если HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        # Определяем протокол
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        
+        # Определяем хост
+        host = environ.get('HTTP_X_FORWARDED_HOST')
+        if host:
+            environ['HTTP_HOST'] = host
+            
+        return self.app(environ, start_response)
+
+app.wsgi_app = ReverseProxied(app.wsgi_app)
+
 # Создаем таблицы при запуске
 Base.metadata.create_all(engine)
 
