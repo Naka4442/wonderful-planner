@@ -34,21 +34,33 @@
                 <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
                 <div class="stat-text">
                     <div class="time-d">Среднее расхождение:</div>
+                    {% if count_done > 0 %}
                     <div class="stat-value">{{ difference / count_done }} мин</div> 
+                    {% else %}
+                    <div class="stat-value">0 мин</div> 
+                    {% endif %}
                 </div>
             </div>
             <div class="stats-item">
                 <img src="{{ url_for('static', filename='images/done.png') }}" alt="">
                 <div class="stat-text">
                     <div class="time-d">Количество выполненных:</div>
-                    <div class="stat-value">{{ count_done }}</div>
+                    {% if count_done > 0 %}
+                    <div class="stat-value">{{ count_done / count_done }}</div>
+                    {% else %}
+                    <div class="stat-value">0</div>
+                    {% endif %}
                 </div>
             </div>
             <div class="stats-item">
                 <img src="{{ url_for('static', filename='images/speedometer.png') }}" alt="">
                 <div class="stat-text">
                     <div class="time-d">Средняя сложность задач:</div>
+                    {% if count_done > 0 %}
                     <div class="stat-value">{{ difficulty / count_done }}</div>
+                    {% else %}
+                    <div class="stat-value">0</div>
+                    {% endif %}
                 </div>
             </div>
         </div>
