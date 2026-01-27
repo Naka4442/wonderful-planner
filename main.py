@@ -197,4 +197,7 @@ with get_db() as db:
         except ValueError as e:
             return jsonify({"error": str(e)})
 
-    app.run(debug=True)
+
+    if __name__ == "__main__":
+        debug = os.getenv("FLASK_ENV", "production") == "development"
+        app.run(host="0.0.0.0", port=5000, debug=debug)
