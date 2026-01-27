@@ -18,9 +18,10 @@ class UserServices:
         self.db.add(user)
         self.db.commit()
 
-    def signin(self, email: str, password: str):
+    def signin(self, email: str, password: str) -> User:
         user = self.db.query(User).filter(User.email == email, User.password == password).first()
         if not user:
             raise ValueError("Пользователь не найден")
         session["user_id"] = user.id
         session["user_name"] = user.name
+        return user
