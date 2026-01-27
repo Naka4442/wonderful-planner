@@ -8,6 +8,7 @@ services:
       - .env
     environment:
       - FLASK_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
     volumes:
       - ./static:/app/static
       - ./templates:/app/templates
@@ -23,7 +24,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./static:/var/www/static:ro
+      - ./static:/usr/share/nginx/static:ro
     depends_on:
       - flask
     networks:
