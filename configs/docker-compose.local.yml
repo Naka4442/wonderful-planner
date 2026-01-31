@@ -9,7 +9,6 @@ services:
     environment:
       - FLASK_ENV=production
       - DATABASE_URL=${DATABASE_URL}
-      - SERVER_NAME=wonderfull-planner.ru,чудесный-планер.рф
     volumes:
       - ./static:/app/static
       - ./templates:/app/templates
@@ -17,32 +16,19 @@ services:
       - "5000"
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   nginx:
     image: nginx:alpine
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"  # Для будущего HTTPS
     volumes:
-      - ./configs/nginx.domain.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./static:/usr/share/nginx/static:ro
-      - ./nginx/logs:/var/log/nginx
-      - ./nginx/cache:/var/cache/nginx
     depends_on:
       - flask
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
 networks:
   app-network:
