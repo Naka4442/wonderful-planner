@@ -30,13 +30,16 @@ services:
       - "80:80"
       - "443:443"  # Для будущего HTTPS
     volumes:
+      # - ./configs/nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      # # - ./configs/nginx.domain.conf:/etc/nginx/nginx.conf:ro
+      # - ./static:/usr/share/nginx/static:ro
+      # - ./nginx/logs:/var/log/nginx
+      # - ./nginx/cache:/var/cache/nginx
+      # - ./certbot/www:/var/www/certbot:ro
+      # - ./certbot/conf:/etc/nginx/ssl:ro
       - ./configs/nginx-ssl.conf:/etc/nginx/nginx.conf:ro
-      # - ./configs/nginx.domain.conf:/etc/nginx/nginx.conf:ro
       - ./static:/usr/share/nginx/static:ro
-      - ./nginx/logs:/var/log/nginx
-      - ./nginx/cache:/var/cache/nginx
-      - ./certbot/www:/var/www/certbot:ro
-      - ./certbot/conf:/etc/nginx/ssl:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro  
     depends_on:
       - flask
     networks:
