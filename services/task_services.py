@@ -126,6 +126,6 @@ class TaskServices:
             Task.user_id == user_id,
             Task.is_event == False,
             func.date(Task.start_time) == day
-        )
+        ).all()
         return not_event_tasks
         

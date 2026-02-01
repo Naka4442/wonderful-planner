@@ -1,10 +1,12 @@
-from datetime import date
+from datetime import date, datetime
 from flask import Flask, jsonify, render_template, request, redirect, session
 from models import get_db, engine, Base, User
 from services import UserServices, TaskServices
 from dotenv import load_dotenv
 from datetime import timedelta
 import os
+
+from utils.date_utils import get_datetime_from_day_and_time
 
 load_dotenv()
 
@@ -59,13 +61,12 @@ def index():
     # Создаем новую сессию для этого запроса
     with get_db() as db:
         task_services = TaskServices(db)
-        user_services = UserServices(db)
         
         difference = task_services.get_time_difference_by_day(session["user_id"], day)
         difficulty = task_services.get_difficulty_by_day(session["user_id"], day)
 
         schedule = task_services.get_schedule(session["user_id"], day)
-        no_repeated_tasks = task_services.get_not_event_tasks(session["user_id"])
+        no_repeated_tasks = task_services.get_not_event_tasks_by_day(session["user_id"], day)
         
         undone = [task for task in no_repeated_tasks if not task.is_done]
         done = [task for task in no_repeated_tasks if task.is_done]
@@ -188,7 +189,7 @@ def create():
         else:
             start_time_day = request.form.get("start-time-day")
             start_time_time = request.form.get("start-time-time")
-            start_time = start_time_day + start_time_time if len(start_time_time) > 0 else start_time_day 
+            start_time = get_datetime_from_day_and_time(start_time_day, start_time_time) if len(start_time_time) > 0 else start_time_day 
             end_time = ""
 
         with get_db() as db:
@@ -205,7 +206,7 @@ def create():
                     repeat_time_start if len(repeat_time_start) > 0 else None,
                     repeat_time_end if len(repeat_time_end) > 0 else None,
                     repeat_weekday,
-                    start_time if len(start_time) > 0 else None,
+                    start_time,
                     end_time if len(end_time) > 0 else None
                 )
                 return redirect("/")
