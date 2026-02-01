@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models import Task
 from datetime import date, timedelta
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 
 
@@ -106,8 +106,9 @@ class TaskServices:
         
         repeated_tasks = self.db.query(Task).filter(
                 Task.user_id == user_id, 
-                Task.is_repeated == True,
-                Task.repeat_weekday == weekday
+                Task.is_event == True,
+                or_(Task.repeat_weekday == weekday,
+                func.date(Task.start_time) == day)
             ).order_by(Task.repeat_time_start).all()
         
         return repeated_tasks
@@ -120,10 +121,11 @@ class TaskServices:
         
         return repeated_tasks
     
-    def get_not_repeated_tasks(self, user_id: int):
-        not_repeated_tasks = self.db.query(Task).filter(
+    def get_not_event_tasks_by_day(self, user_id: int, day:date):
+        not_event_tasks = self.db.query(Task).filter(
             Task.user_id == user_id,
-            Task.is_repeated == False
+            Task.is_event == False,
+            func.date(Task.start_time) == day
         )
-        return not_repeated_tasks
+        return not_event_tasks
         

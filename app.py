@@ -65,7 +65,7 @@ def index():
         difficulty = task_services.get_difficulty_by_day(session["user_id"], day)
 
         schedule = task_services.get_schedule(session["user_id"], day)
-        no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
+        no_repeated_tasks = task_services.get_not_event_tasks(session["user_id"])
         
         undone = [task for task in no_repeated_tasks if not task.is_done]
         done = [task for task in no_repeated_tasks if task.is_done]
@@ -189,7 +189,7 @@ def create():
             start_time_day = request.form.get("start-time-day")
             start_time_time = request.form.get("start-time-time")
             start_time = start_time_day + start_time_time if len(start_time_time) > 0 else start_time_day 
-            end_time = None
+            end_time = ""
 
         with get_db() as db:
             task_services = TaskServices(db)
