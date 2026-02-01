@@ -9,7 +9,6 @@ services:
     environment:
       - FLASK_ENV=production
       - DATABASE_URL=${DATABASE_URL}
-      - SERVER_NAME=wonderfull-planner.ru,чудесный-планер.рф
     volumes:
       - ./static:/app/static
       - ./templates:/app/templates
@@ -17,46 +16,17 @@ services:
       - "5000"
     networks:
       - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   nginx:
     image: nginx:alpine
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"  # Для будущего HTTPS
     volumes:
-      # - ./configs/nginx-ssl.conf:/etc/nginx/nginx.conf:ro
-      # # - ./configs/nginx.domain.conf:/etc/nginx/nginx.conf:ro
-      # - ./static:/usr/share/nginx/static:ro
-      # - ./nginx/logs:/var/log/nginx
-      # - ./nginx/cache:/var/cache/nginx
-      # - ./certbot/www:/var/www/certbot:ro
-      # - ./certbot/conf:/etc/nginx/ssl:ro
-      - ./configs/nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./configs/nginx.local.conf:/etc/nginx/nginx.conf:ro
       - ./static:/usr/share/nginx/static:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro  
     depends_on:
       - flask
-    networks:
-      - app-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./certbot/www:/var/www/certbot:rw
-      - ./certbot/conf:/etc/letsencrypt:rw
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew; done;'"
     networks:
       - app-network
 
