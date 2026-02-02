@@ -1,0 +1,35 @@
+@media screen and (max-width: 475px) {
+
+    form{
+        width:300 px;
+    }
+    input{
+        width:250 px;
+    }
+    textarea{
+        width: 250 px;
+    }
+    .time-block{
+        width: 260 px;
+    }
+    .time-block>input{
+        width: 125 px;
+    }
+    .repeated-time{
+        width: 15 px;
+    }
+    button{
+        width: 250 px;
+    }
+    #return{
+        width: 100 px;
+        height: 5px;
+    } 
+    #repeat_weekday{
+        width: 75 px;
+    }
+    .event>input{
+        width: 20 px;
+    }
+
+}

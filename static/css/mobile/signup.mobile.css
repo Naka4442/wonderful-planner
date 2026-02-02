@@ -1,0 +1,13 @@
+@media screen and (max-width: 475px) {
+    form{
+        width: 300px;
+    }
+
+    input{
+        width: 250px;
+    }
+
+    button{
+        width: 250px;
+    }
+}
