@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/signup.mobile.css') }}">
     <title>Регистрация</title>
 </head>
 <body>
@@ -25,9 +26,10 @@
             <label for="">Я анализирую,почему какие-то задачи заняли больше или меньше времени,чем я планировал</label>
             <input type="number" name="question" id="" min="1" max="5">
             <button type="submit">Регистрация</button>
+            <a href="signin">Вход</a>
         </form>
         {% if error %} <p> {{ error }} </p> {% endif %}
-        <a href="signin">Вход</a>
+
         
     </main>
 </body>

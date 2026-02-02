@@ -1,6 +1,9 @@
 @media screen and (max-width: 475px) {
     form{
         width: 300px;
+        padding-bottom: 10px;
+        gap: 10px;
+        height: auto;
     }
 
     input{
@@ -10,4 +13,9 @@
     button{
         width: 250px;
     }
+    label {
+        width: 250px;
+        text-align: center;
+    }
+
 }
