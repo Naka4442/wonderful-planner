@@ -56,14 +56,27 @@ class TaskServices:
         tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
         return tasks
 
-    def get_time_difference_by_day(self, user_id: int, day: date):
+    def get_positive_difference_by_day(self, user_id: int, day: date):
+        count = 0
         day_difference = 0
         tasks = self.db.query(Task).filter(Task.user_id == user_id, func.date(Task.start_time) == day, Task.is_done == 1).all()
         for task in tasks:
-            day_difference += abs(task.supposed_time - task.actual_time)
-        return day_difference
+            if task.supposed_time - task.actual_time >= 0:
+                count += 1
+                day_difference += task.supposed_time - task.actual_time
+        return count, day_difference
+    def get_negative_difference_by_day(self, user_id: int, day: date):
+        count = 0
+        day_difference = 0
+        tasks = self.db.query(Task).filter(Task.user_id == user_id, func.date(Task.start_time) == day, Task.is_done == 1).all()
+        for task in tasks:
+            if task.supposed_time - task.actual_time <= 0:
+                count += 1
+                day_difference += task.supposed_time - task.actual_time
+        return count, day_difference
     
-    def get_time_difference_by_week(self, user_id: int, day:date):
+    def get_positive_difference_by_week(self, user_id: int, day:date):
+        count = 0
         week_difference = 0
         tasks = self.db.query(Task).filter(
             Task.user_id == user_id,Task.start_time >= day,
@@ -71,8 +84,24 @@ class TaskServices:
             Task.is_done == 1
         ).all()
         for task in tasks:
-            week_difference += abs(task.supposed_time - task.actual_time)
-        return week_difference
+            if task.supposed_time - task.actual_time >= 0:
+                count += 1
+                week_difference += task.supposed_time - task.actual_time
+        return count,week_difference
+    def get_negative_difference_by_week(self, user_id: int, day:date):
+        count = 0
+        week_difference = 0
+        tasks = self.db.query(Task).filter(
+            Task.user_id == user_id,Task.start_time >= day,
+            Task.start_time < day + timedelta(days=8),
+            Task.is_done == 1
+        ).all()
+        for task in tasks:
+            if task.supposed_time - task.actual_time <= 0:
+                count += 1
+                week_difference += task.supposed_time - task.actual_time
+
+        return count,week_difference
     
     def get_difficulty_by_week(self, user_id: int, day:date):
         week_difficulty = 0

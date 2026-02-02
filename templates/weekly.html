@@ -32,13 +32,11 @@
         <div class="stats">
             <div class="stats-item">
                 <img src="{{ url_for('static', filename='images/clock.png') }}"  alt="">
-                <div class="stat-text">
-                    <div class="time-d">Среднее расхождение:</div>
-                    {% if count_done > 0 %}
-                    <div class="stat-value">{{ difference / count_done }} мин</div>
-                    {% else %}
-                    <div class="stat-value">0 мин</div>
-                    {% endif %}
+                <div class="stats-item-time">
+                    <p>Кол-во просроченных: <span class="time-d">{{pos_count}}</span></p>
+                    <p>Общее время опоздания: <span class="time-d">{{pos_difference}}</span></p>
+                    <p>Кол-во досрочно сделанных: <span class="time-d">{{neg_count}}</span></p>
+                    <p>Общее время расхождения: <span class="time-d">{{neg_difference}}</span></p>
                 </div>
             </div>
             <div class="stats-item">

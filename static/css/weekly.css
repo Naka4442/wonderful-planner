@@ -76,6 +76,12 @@ main{
     font-size: 25px;
     font-weight: 600;
 }
+.stats-item-time{
+    font-size: 12px;
+}
+.stats-item-time>p {
+    margin: 4px;
+}
 .check{
     width: 25px;
     height: 25px;

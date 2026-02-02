@@ -1,0 +1,20 @@
+@media screen and (max-width: 870px) {
+
+    #day-header {
+       font-size: 20px;
+    }
+    .top-menu {
+        width: 100%;
+        display: flex;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+    .task{
+        width:200px;
+        font-size: 10px;
+    }
+    .stats{
+        width: 90%;
+    }
+
+}

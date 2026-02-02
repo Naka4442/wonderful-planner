@@ -55,6 +55,12 @@ main{
     /* text-align: center; */
     font-size: 14px;
 }
+.stats-item-time{
+    font-size: 12px;
+}
+.stats-item-time>p {
+    margin: 4px;
+}
 .stat-text{
     display: flex;
     flex-direction: column;

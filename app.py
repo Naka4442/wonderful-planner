@@ -62,7 +62,8 @@ def index():
     with get_db() as db:
         task_services = TaskServices(db)
         
-        difference = task_services.get_time_difference_by_day(session["user_id"], day)
+        pos_count, pos_difference = task_services.get_positive_difference_by_day(session["user_id"], day)
+        neg_count, neg_difference  = task_services.get_negative_difference_by_day(session["user_id"], day)
         difficulty = task_services.get_difficulty_by_day(session["user_id"], day)
 
         schedule = task_services.get_schedule(session["user_id"], day)
@@ -78,8 +79,11 @@ def index():
             schedule=schedule,
             count_done=len(done),
             count_undone=len(undone),
-            difference=difference,
-            difficulty=difficulty,
+            pos_count=pos_count,
+            pos_difference=pos_difference,
+            neg_difference=neg_difference,
+            neg_count=neg_count,
+            difficulty=difficulty
         )
 
 @app.route("/weekly")
@@ -101,25 +105,29 @@ def weekly():
     
     with get_db() as db:
         task_services = TaskServices(db)
-        
-        difference = task_services.get_time_difference_by_week(session["user_id"], day)
+
+        pos_count, pos_difference = task_services.get_positive_difference_by_week(session["user_id"], day)
+        neg_count, neg_difference = task_services.get_negative_difference_by_week(session["user_id"], day)
         difficulty = task_services.get_difficulty_by_week(session["user_id"], day)
         schedule = task_services.get_week_schedule(session["user_id"])
-        no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
+        #no_repeated_tasks = task_services.get_not_repeated_tasks(session["user_id"])
         
-        undone = [task for task in no_repeated_tasks if not task.is_done]
-        done = [task for task in no_repeated_tasks if task.is_done]
+        #undone = [task for task in no_repeated_tasks if not task.is_done]
+        #done = [task for task in no_repeated_tasks if task.is_done]
         
         return render_template(
             "weekly.html",
             user_name=user_name,
-            undone=undone,
-            done=done,
+            #undone=undone,
+            #done=done,
             schedule=schedule,
-            count_done=len(done),
-            count_undone=len(undone),
+            #count_done=len(done),
+            #count_undone=len(undone),
             difficulty=difficulty,
-            difference=difference
+            pos_difference=pos_difference,
+            pos_count=pos_count,
+            neg_difference=neg_difference,
+            neg_count=neg_count
         )
 
 @app.route("/signup", methods = ["GET", "POST"])
