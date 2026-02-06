@@ -1,60 +1,29 @@
+from typing import List
 from sqlalchemy.orm import Session
 from models import Task
 from datetime import date, timedelta
 from sqlalchemy import func, or_
 
+from models.task import TaskCreateDto, TaskSchema
+from repositories.event_repository import EventRepository
+from repositories.task_repository import TaskRepository
+
 
 
 class TaskServices:
-    def __init__(self, db: Session):
-        self.db = db
-        
-    def create(
-        self, 
-        title: str, 
-        user_id: int, 
-        description: str, 
-        difficulty: int, 
-        supposed_time: int,
-        is_event:bool,
-        is_repeated: bool = False,
-        repeat_time_start: str = None,
-        repeat_time_end: str = None,
-        repeat_weekday: int = None,
-        start_time: str = None,
-        end_time: str = None
+    def __init__(
+        self,
+        task_repository: TaskRepository,
+        event_repository: EventRepository
     ):
-        if is_repeated:
-            task = Task(
-                title=title, 
-                user_id=user_id, 
-                description=description, 
-                difficulty=difficulty, 
-                supposed_time=supposed_time,
-                is_event=is_event,
-                is_repeated=is_repeated,
-                repeat_time_start=repeat_time_start,
-                repeat_time_end=repeat_time_end,
-                repeat_weekday=repeat_weekday,
-            )
-        else:
-            task = Task(
-                title=title, 
-                user_id=user_id, 
-                description=description, 
-                difficulty=difficulty,
-                is_event=is_event,
-                is_repeated=is_repeated,
-                supposed_time=supposed_time,
-                start_time=start_time,
-                end_time=end_time
-            )
-        self.db.add(task)
-        self.db.commit()
+        self.task_repo = task_repository
+        self.event_repo = event_repository
         
-    def get_all(self, user_id: int):
-        tasks = self.db.query(Task).filter(Task.user_id == user_id).all()
-        return tasks
+    def create_task(self, task_data: TaskCreateDto) -> None:
+        self.task_repo.create(task_data)
+        
+    def get_all(self, user_id: int) -> List[TaskSchema]:
+        return self.task_repo.get_by_user_id(user_id)
 
     def get_positive_difference_by_day(self, user_id: int, day: date):
         count = 0
