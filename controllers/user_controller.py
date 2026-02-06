@@ -1,6 +1,6 @@
-from datetime import date
 from flask import redirect, render_template, request, session
-from models.base import get_db
+
+from models.user import UserSigninDto, UserSignupDto
 from services.user_services import UserServices
 
 
@@ -8,39 +8,30 @@ class UserController:
     def __init__(self, user_services: UserServices):
         self.user_services = user_services
 
+    def _add_user_data_to_session(self, user_id: int, user_name: str):
+        session.update({"user_id": user_id})
+        session.update({"user_name": user_name})
+
     def signin(self):
         if request.method == "POST":
-            email = request.form.get("email")
-            password = request.form.get("password")
-            
-            with get_db() as db:
-                user_services = UserServices(db)
-                try:
-                    user = user_services.signin(email, password)
-                    session.update({"user_id": user.id})
-                    session.update({"user_name": user.name})
-                    return redirect("/")
-                except ValueError as e:
-                    return render_template("signin.html", error=str(e))
+            try:
+                user_data = UserSigninDto(**request.form)
+                user = self.user_services.signin(user_data)
+                self._add_user_data_to_session(user.id, user.name)
+                return redirect("/")
+            except ValueError as e:
+                return render_template("signin.html", error=str(e))
         
         return render_template("signin.html")
     
-    def signup():
+    def signup(self):
         if request.method == "POST":
-            name = request.form.get("name")
-            email = request.form.get("email")
-            password = request.form.get("password")
-            password2 = request.form.get("password2")
-            
-            with get_db() as db:
-                user_services = UserServices(db)
-                try:
-                    user = user_services.signup(name, email, password, password2)
-                    # Сохраняем в сессии
-                    session["user_id"] = user.id
-                    session["user_name"] = user.name
-                    return redirect("/")
-                except ValueError as e:
-                    return render_template("signup.html", error=str(e))
+            try:
+                user_data = UserSignupDto(**request.form)
+                user = self.user_services.signup(user_data)
+                self._add_user_data_to_session(user.id, user.name)
+                return redirect("/")
+            except ValueError as e:
+                return render_template("signup.html", error=str(e))
         
         return render_template("signup.html")
