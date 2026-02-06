@@ -1,26 +1,27 @@
-from sqlalchemy.orm import Session
-from models import User
 from flask import session
+
+from models.user import UserCreateDto, UserSchema, UserSigninDto, UserSignupDto
+from repositories.user_repository import UserRepository
 
 
 class UserServices:
-    def __init__(self, db: Session ):
-        self.db = db
+    def __init__(self, user_repository: UserRepository):
+        self.user_repo = user_repository
 
-    def signup(self, name: str, email: str, password: str, password2: str):
-        same_email = self.db.query(User).filter(User.email == email).first()
-        if same_email:
+    def signup(self, user_data: UserSignupDto) -> None:
+        if self.user_repo.check_user_by_email(user_data.email):
             raise ValueError("Пользователь с таким email уже существует")
-        if password != password2:
+        
+        if user_data.password != user_data.password2:
             raise ValueError("Пароли не совпадают")
 
-        user = User(name=name, email=email, password=password)
-        self.db.add(user)
-        self.db.commit()
+        self.user_repo.create(UserCreateDto(
+            **user_data.model_dump(exclude=["password2"])
+        ))
 
-    def signin(self, email: str, password: str) -> User:
-        user = self.db.query(User).filter(User.email == email, User.password == password).first()
-        if not user:
+    def signin(self, user_data: UserSigninDto) -> UserSchema:
+        user = self.user_repo.get_user_by_email_and_password(user_data)
+        if user is None:
             raise ValueError("Пользователь не найден")
         session["user_id"] = user.id
         session["user_name"] = user.name
