@@ -37,16 +37,6 @@ class EventRepository(AbstractRepository):
             ).all()
         ]
     
-    def get_by_user_id_and_week(self, user_id: int, monday_date: date) -> List[EventSchema]:
-        return [
-            EventSchema.model_validate(event, from_attributes=True)
-            for event in self.db.query(Event).filter(
-                Event.user_id == user_id,
-                func.date(Event.start_time) >= monday_date,
-                func.date(Event.start_time) < monday_date + timedelta(days=7)
-            ).all()
-        ]
-    
     def delete(self, event_id: int) -> None:
         event = self.db.query(Event).filter(Event.id == event_id).first()
         if event is None:

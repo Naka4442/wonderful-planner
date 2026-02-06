@@ -57,17 +57,28 @@ def teardown_request_db(exception=None):
 
 # Репозитории
 user_repository = UserRepository()
+user_info_repository = UserInfoRepository()
+task_repository = TaskRepository()
+event_repository = EventRepository()
 
 # Сервисы
-user_services = UserServices(user_repository)
-# task_services = TaskServices()
+user_services = UserServices(
+    user_repository,
+    user_info_repository,
+)
+task_services = TaskServices(
+    task_repository,
+    event_repository,
+)
 
 # Контроллеры
 user_controller = UserController(user_services)
+task_controller = TaskController(task_services)
 # task_controller = TaskController(task_services)
 
 # Роутеры
 user_router = UserRouter(app, "users", user_controller)
+task_router = TaskRouter(app, "task", task_controller)
 # task_router = TaskRouter(app, "task", task_controller)
 
 

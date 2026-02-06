@@ -1,7 +1,9 @@
+from typing import List
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import Column, String, Integer, Text, DateTime
 from datetime import datetime
 from models.base import Base
+from models.user_info import UserInfoCreateDto
 
 
 class User(Base):
@@ -33,6 +35,8 @@ class UserSignupDto(BaseModel):
     name: str
     password: str
     password2: str
+
+    info: List[UserInfoCreateDto] | None = None
 
 
 class UserSigninDto(BaseModel):

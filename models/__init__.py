@@ -26,7 +26,13 @@ from .event import (
     EventSchema,
     EventCreateDto
 )
-
+from .user_info import (
+    UserInfoQuestion,
+    UserInfo,
+    UserInfoQuestionSchema,
+    UserInfoSchema,
+    UserInfoCreateDto
+)
 
 __all__ = [
     # База
@@ -47,5 +53,11 @@ __all__ = [
     # Мероприятия
     "Event", 
     "EventSchema", 
-    "EventCreateDto"
+    "EventCreateDto",
+    # Анкетирование
+    "UserInfoQuestion",
+    "UserInfo",
+    "UserInfoQuestionSchema",
+    "UserInfoSchema",
+    "UserInfoCreateDto",
 ]

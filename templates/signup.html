@@ -15,7 +15,11 @@
             <input type="text" name="email" id="" placeholder="Почта">
             <input type="password" name="password" placeholder="Пароль">
             <input type="password" name="password2" placeholder="Повторите пароль">
-            <label for="">Я обычно могу заранее достаточно оценить,сколько времени займет задача</label>
+            {% for question in questions %}
+                <label for="">{{ question.question }}</label>
+                <input type="number" name="question" id="" min="1" max="5" />
+            {% endfor %}
+            <!-- <label for="">Я обычно могу заранее достаточно оценить,сколько времени займет задача</label>
             <input type="number" name="question" id="" min="1" max="5" >
             <label for="">Мои планы на день обычно соответствуется тому,что я реально успеваю делать</label>
             <input type="number" name="question" id="" min="1" max="5" >
@@ -24,7 +28,7 @@
             <label for="">Я могу работать над задачей,не отвлекаясь</label>
             <input type="number" name="question" id="" min="1" max="5" >
             <label for="">Я анализирую,почему какие-то задачи заняли больше или меньше времени,чем я планировал</label>
-            <input type="number" name="question" id="" min="1" max="5">
+            <input type="number" name="question" id="" min="1" max="5"> -->
             <button type="submit">Регистрация</button>
             <a href="signin">Вход</a>
         </form>

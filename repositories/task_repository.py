@@ -22,12 +22,12 @@ class TaskRepository(AbstractRepository):
             ).all()
         ]
 
-    def get_by_user_id_and_date(self, user_id: int, date: date) -> List[TaskSchema]:
+    def get_by_user_id_and_date(self, user_id: int, day: date) -> List[TaskSchema]:
         return [
             TaskSchema.model_validate(task, from_attributes=True)
             for task in self.db.query(Task).filter(
                 Task.user_id == user_id,
-                func.date(Task.start_time) == date
+                func.date(Task.start_time) == day
             ).all()
         ]
 
