@@ -15,7 +15,7 @@ class TaskRouter(AbstractRouter):
             methods=["GET"],
             endpoint="day_index"
         )
-        self.router.add_url_rule(
+        self.app.add_url_rule(
             "/week/",
             view_func=self.task_controller.week_index,
             methods=["GET"],

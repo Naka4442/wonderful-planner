@@ -164,64 +164,142 @@ class TaskController:
         return dt_value
     
     def week_index(self):
-        """Недельное представление"""
+        """Главная страница недельного расписания"""
         try:
-            user_id, user_name = self._check_auth()
-        except redirect as e:
-            return e
-        
-        # Определяем дату
-        selected_date = self._parse_date_param(request.args.get("date"))
-        if not selected_date:
-            selected_date = date.today()
-        
-        # Находим понедельник текущей недели
-        week_start = selected_date - timedelta(days=selected_date.weekday())
-        
-        try:
+            # Определяем дату начала недели
+            selected_date_str = request.args.get('week_start')
+            if selected_date_str:
+                selected_date = date.fromisoformat(selected_date_str)
+            else:
+                # Если не указана, используем понедельник текущей недели
+                today = date.today()
+                selected_date = today - timedelta(days=today.weekday())  # Приводим к понедельнику
+            
+            # Проверяем, что дата действительно понедельник
+            if selected_date.weekday() != 0:  # 0 = понедельник
+                selected_date = selected_date - timedelta(days=selected_date.weekday())
+            
             # Получаем расписание на неделю
-            schedule = self.task_service.get_weekly_schedule(user_id, week_start)
+            week_schedule = self.task_service.get_weekly_schedule(
+                user_id=1,  # Здесь должен быть реальный user_id из сессии
+                week_start=selected_date
+            )
             
             # Получаем статистику за неделю
-            statistics = self.task_service.get_weekly_statistics(user_id, week_start)
+            week_statistics = self.task_service.get_weekly_statistics(
+                user_id=1,
+                week_start=selected_date
+            )
             
-            # Подготавливаем данные для шаблона
-            week_days = []
-            for day_schedule in schedule.days:
-                pending_tasks = [task for task in day_schedule.tasks if not task.is_done]
-                completed_tasks = [task for task in day_schedule.tasks if task.is_done]
+            # Формируем данные для календаря
+            week_data = []
+            for day_schedule in week_schedule.days:
+                # Обрабатываем задачи для дня
+                processed_tasks = []
+                for task in day_schedule.tasks:
+                    if task.start_time:
+                        start_dt = task.start_time
+                        start_hour = start_dt.hour
+                        start_minute = start_dt.minute
+                        
+                        # Рассчитываем продолжительность
+                        duration_minutes = task.supposed_time if task.supposed_time else 30
+                        
+                        processed_tasks.append({
+                            'task': task,
+                            'start_datetime': start_dt,
+                            'start_hour': start_hour,
+                            'start_minute': start_minute,
+                            'duration_minutes': duration_minutes
+                        })
                 
-                week_days.append({
+                # Обрабатываем события для дня
+                processed_events = []
+                for event in day_schedule.events:
+                    if event.start_time:
+                        start_dt = event.start_time
+                        start_hour = start_dt.hour
+                        start_minute = start_dt.minute
+                        
+                        # Рассчитываем продолжительность события
+                        duration_minutes = 60  # По умолчанию 1 час
+                        if event.end_time and event.start_time:
+                            duration_minutes = int((event.end_time - event.start_time).total_seconds() / 60)
+                        
+                        processed_events.append({
+                            'event': event,
+                            'start_datetime': start_dt,
+                            'start_hour': start_hour,
+                            'start_minute': start_minute,
+                            'duration_minutes': duration_minutes,
+                            'end_datetime': event.end_time if hasattr(event, 'end_time') else None
+                        })
+                
+                # Разделяем задачи на выполненные и активные
+                undone_tasks = [t for t in day_schedule.tasks if not t.is_done]
+                done_tasks = [t for t in day_schedule.tasks if t.is_done]
+                
+                week_data.append({
                     'date': day_schedule.day,
-                    'date_str': day_schedule.day.strftime("%Y-%m-%d"),
-                    'day_name': day_schedule.day.strftime("%A"),
+                    'day_name': self._get_day_name(day_schedule.day),
+                    'date_str': day_schedule.day.strftime('%d.%m'),
+                    'full_date_str': day_schedule.day.strftime('%d %B %Y'),
                     'tasks': day_schedule.tasks,
                     'events': day_schedule.events,
-                    'pending': pending_tasks,
-                    'completed': completed_tasks,
-                    'total_tasks': len(day_schedule.tasks),
-                    'completed_count': len(completed_tasks)
+                    'undone_tasks': undone_tasks,
+                    'done_tasks': done_tasks,
+                    'processed_tasks': processed_tasks,
+                    'processed_events': processed_events,
+                    'is_today': day_schedule.day == date.today()
                 })
             
+            # Формируем диапазон недели
+            week_end = selected_date + timedelta(days=6)
+            week_range = f"{selected_date.strftime('%d %b')} - {week_end.strftime('%d %b %Y')}"
+            
+            # Определяем предыдущую и следующую недели
+            prev_week = selected_date - timedelta(days=7)
+            next_week = selected_date + timedelta(days=7)
+            
             return render_template(
-                "week_index.html",
-                user_name=user_name,
-                week_days=week_days,
-                statistics=statistics,
-                week_start=week_start.strftime("%Y-%m-%d"),
-                selected_date=selected_date.strftime("%Y-%m-%d"),
-                today=date.today().strftime("%Y-%m-%d")
+                'week_index.html',
+                week_data=week_data,
+                week_start=selected_date,
+                week_end=week_end,
+                week_range=week_range,
+                statistics=week_statistics,
+                prev_week=prev_week,
+                next_week=next_week,
+                today=date.today()
             )
             
         except Exception as e:
-            logger.error(f"Ошибка при получении недельного расписания: {e}")
+            print(f"Error in week_index: {e}")
             return render_template(
-                "week_index.html",
-                user_name=user_name,
-                error="Ошибка при загрузке недельного расписания",
-                week_days=[],
-                week_start=week_start.strftime("%Y-%m-%d")
+                'week_index.html',
+                error=str(e),
+                week_data=[],
+                week_start=date.today(),
+                week_end=date.today(),
+                week_range="Ошибка",
+                statistics=None,
+                prev_week=date.today(),
+                next_week=date.today(),
+                today=date.today()
             )
+    
+    def _get_day_name(self, date_obj: date) -> str:
+        """Получить название дня недели на русском"""
+        days = {
+            0: 'Понедельник',
+            1: 'Вторник',
+            2: 'Среда',
+            3: 'Четверг',
+            4: 'Пятница',
+            5: 'Суббота',
+            6: 'Воскресенье'
+        }
+        return days[date_obj.weekday()]
     
     def create_task_page(self):
         """Страница создания задачи"""
