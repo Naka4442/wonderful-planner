@@ -102,19 +102,6 @@
                             <span class="compact-stat-subtext" id="completion-rate">{{ statistics.completion_rate|round(1) }}%</span>
                         </div>
                     </div>
-                    
-                    {% if statistics.efficiency_score %}
-                    <div class="compact-progress">
-                        <div class="compact-progress-label">
-                            <span>Эффективность</span>
-                            <span id="efficiency-score">{{ statistics.efficiency_score|round(1) }}%</span>
-                        </div>
-                        <div class="compact-progress-bar">
-                            <div class="compact-progress-fill efficiency" 
-                                style="width: {{ statistics.efficiency_score }}%"></div>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
             
@@ -345,7 +332,7 @@
                     <i class="fas fa-list-ul"></i>
                     Активные ({{ undone|length }})
                 </button>
-                <button class="tab-btn" data-tab="completed">
+                <button class="tab-btn" data-tab="done">
                     <i class="fas fa-check-circle"></i>
                     Выполненные ({{ done|length }})
                 </button>
@@ -406,63 +393,57 @@
                         <div class="empty-state">
                             <i class="fas fa-check-circle"></i>
                             <h3>Нет активных задач</h3>
-                            <p>Все задачи выполнены или создайте новые</p>
-                            <a href="{{ url_for('tasks.create_task') }}" class="create-btn">
-                                <i class="fas fa-plus"></i>
-                                Создать задачу
-                            </a>
+                            <p>Все задачи выполнены. Если вы хотите добавить новую задачу, нажмите "Новая задача"</p>
                         </div>
                     {% endif %}
                 </div>
                 
                 <!-- Выполненные задачи -->
-                <div class="tasks-list" id="completed-tasks">
+                <div class="tasks-list" id="done-tasks">
                     {% if done %}
-                        {% for task in done %}
-                        <div class="task-card task-completed">
-                            <div class="task-header">
-                                <div class="task-title-wrapper">
-                                    <h4><s>{{ task.title }}</s></h4>
-                                    <span class="task-badge task-badge-success">
-                                        <i class="fas fa-check"></i> Выполнено
-                                    </span>
-                                </div>
-                                <div class="task-completion-time">
-                                    <i class="fas fa-stopwatch"></i>
-                                    {{ task.actual_time }} мин
-                                </div>
+                    {% for task in done %}
+                    <div class="task-card task-completed">
+                        <div class="task-header">
+                            <div class="task-title-wrapper">
+                                <h4>{{ task.title }}</h4> <!-- Убрали <s> -->
+                                <span class="task-badge task-badge-success">
+                                    <i class="fas fa-check"></i> Выполнено
+                                </span>
                             </div>
-                            
-                            {% if task.description %}
-                            <p class="task-description">
-                                {% if task.description|length > 80 %}
-                                {{ task.description[:80] }}...
-                                {% else %}
-                                {{ task.description }}
-                                {% endif %}
-                            </p>
+                            {% if task.actual_time %}
+                            <div class="task-completion-time">
+                                <i class="fas fa-stopwatch"></i>
+                                {{ task.actual_time }} мин
+                            </div>
                             {% endif %}
-                            
-                            <div class="task-footer">
-                                <div class="task-meta">
-                                    <span class="task-meta-item">
-                                        <i class="fas fa-signal"></i>
-                                        Сложность: {{ task.difficulty }}
-                                    </span>
-                                    <span class="task-meta-item">
-                                        <i class="far fa-clock"></i>
-                                        Планировалось: {{ task.supposed_time }} мин
-                                    </span>
-                                    {% if task.start_time %}
-                                    <span class="task-meta-item">
-                                        <i class="far fa-calendar"></i>
-                                        {{ task.start_time.strftime("%H:%M") }}
-                                    </span>
-                                    {% endif %}
-                                </div>
+                        </div>
+                        
+                        {% if task.description %}
+                        <p class="task-description">
+                            {{ task.description|truncate(80) }}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="task-footer">
+                            <div class="task-meta">
+                                <span class="task-meta-item">
+                                    <i class="fas fa-signal"></i>
+                                    Сложность: {{ task.difficulty }}
+                                </span>
+                                <span class="task-meta-item">
+                                    <i class="far fa-clock"></i>
+                                    Планировалось: {{ task.supposed_time }} мин
+                                </span>
+                                {% if task.start_time %}
+                                <span class="task-meta-item">
+                                    <i class="far fa-calendar"></i>
+                                    {{ task.start_time.strftime("%H:%M") }}
+                                </span>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    {% endfor %}
                     {% else %}
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>

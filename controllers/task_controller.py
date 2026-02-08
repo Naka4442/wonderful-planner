@@ -47,8 +47,6 @@ class TaskController:
             logger.warning(f"Ошибка парсинга даты {date_str}: {e}")
             return None
     
-    # ========== РЕНДЕРИНГ СТРАНИЦ ==========
-    
     def day_index(self):
         try:
             user_id, user_name = self._check_auth()
@@ -64,74 +62,16 @@ class TaskController:
             # Получаем расписание на день
             schedule = self.task_service.get_daily_schedule(user_id, selected_date)
             
-            # Подготавливаем задачи для календаря
-            processed_tasks = []
-            for task in schedule.tasks:
-                if task.start_time:
-                    start_dt = task.start_time
-                    duration_minutes = task.supposed_time
-                    
-                    processed_tasks.append({
-                        'task': task,
-                        'start_hour': start_dt.hour,
-                        'start_minute': start_dt.minute,
-                        'duration_minutes': duration_minutes,
-                        'end_minute': (start_dt.minute + duration_minutes) % 60,
-                        'end_hour': start_dt.hour + (start_dt.minute + duration_minutes) // 60,
-                        'start_datetime': start_dt
-                    })
-            
-            # Подготавливаем события для календаря
-            processed_events = []
-            for event in schedule.events:
-                if event.start_time:
-                    try:
-                        # Конвертируем время из строки в datetime
-                        from datetime import datetime
-                        if isinstance(event.start_time, str):
-                            start_dt = datetime.fromisoformat(event.start_time.replace('Z', '+00:00'))
-                        else:
-                            start_dt = event.start_time
-                        
-                        end_dt = None
-                        if event.end_time:
-                            if isinstance(event.end_time, str):
-                                end_dt = datetime.fromisoformat(event.end_time.replace('Z', '+00:00'))
-                            else:
-                                end_dt = event.end_time
-                        
-                        if not end_dt:
-                            end_dt = start_dt + timedelta(hours=1)
-                        
-                        duration_minutes = int((end_dt - start_dt).total_seconds() / 60)
-                        
-                        processed_events.append({
-                            'event': event,
-                            'start_hour': start_dt.hour,
-                            'start_minute': start_dt.minute,
-                            'end_hour': end_dt.hour,
-                            'end_minute': end_dt.minute,
-                            'duration_minutes': duration_minutes,
-                            'start_datetime': start_dt,
-                            'end_datetime': end_dt
-                        })
-                    except Exception as e:
-                        logger.error(f"Ошибка обработки события {event.id}: {e}")
-                        continue
+            # Подготавливаем данные для представления
+            processed_tasks = self._process_tasks_for_calendar(schedule.tasks)
+            processed_events = self._process_events_for_calendar(schedule.events)
             
             # Получаем статистику
             statistics = self.task_service.get_daily_statistics(user_id, selected_date)
             
-            # Разделяем задачи на выполненные и невыполненные
+            # Разделяем задачи
             pending_tasks = [task for task in schedule.tasks if not task.is_done]
             completed_tasks = [task for task in schedule.tasks if task.is_done]
-            
-            # Рассчитываем дополнительные метрики
-            pos_count = statistics.positive_differences
-            pos_difference = statistics.total_positive_time
-            neg_count = statistics.negative_differences
-            neg_difference = statistics.total_negative_time
-            difficulty_sum = sum(task.difficulty for task in completed_tasks)
             
             return render_template(
                 "day_index.html",
@@ -139,14 +79,8 @@ class TaskController:
                 selected_date=selected_date.strftime("%Y-%m-%d"),
                 
                 # Для статистики
-                pos_count=pos_count,
-                pos_difference=pos_difference,
-                neg_count=neg_count,
-                neg_difference=neg_difference,
-                difficulty=difficulty_sum,
-                
                 statistics=statistics,
-
+                
                 # Для календаря
                 processed_tasks=processed_tasks,
                 processed_events=processed_events,
@@ -160,25 +94,74 @@ class TaskController:
                 current_hour=datetime.now().hour if selected_date == date.today() else None,
                 today=date.today().strftime("%Y-%m-%d")
             )
-            
         except Exception as e:
-            logger.error(f"Ошибка при получении дневного расписания: {e}")
-            return render_template(
-                "day_index.html",
-                user_name=user_name,
-                error="Ошибка при загрузке расписания",
-                processed_tasks=[],
-                processed_events=[],
-                undone=[],
-                done=[],
-                events=[],
-                selected_date=selected_date.strftime("%Y-%m-%d"),
-                pos_count=0,
-                pos_difference=0,
-                neg_count=0,
-                neg_difference=0,
-                difficulty=0
-            )
+            logger.error(f"Ошибка в day_index: {e}")
+            return render_template("error.html", error="Произошла ошибка при загрузке расписания")
+
+    def _process_tasks_for_calendar(self, tasks):
+        """Обработка задач для календаря"""
+        processed = []
+        for task in tasks:
+            if task.start_time:
+                try:
+                    start_dt = task.start_time
+                    duration_minutes = task.supposed_time or 30
+                    
+                    end_minute = (start_dt.minute + duration_minutes) % 60
+                    end_hour = start_dt.hour + (start_dt.minute + duration_minutes) // 60
+                    
+                    processed.append({
+                        'task': task,
+                        'start_hour': start_dt.hour,
+                        'start_minute': start_dt.minute,
+                        'duration_minutes': duration_minutes,
+                        'end_minute': end_minute,
+                        'end_hour': end_hour,
+                        'start_datetime': start_dt
+                    })
+                except Exception as e:
+                    logger.error(f"Ошибка обработки задачи {task.id}: {e}")
+                    continue
+        return processed
+
+    def _process_events_for_calendar(self, events):
+        """Обработка событий для календаря"""
+        processed = []
+        for event in events:
+            if event.start_time:
+                try:
+                    # Конвертируем время
+                    start_dt = self._parse_datetime(event.start_time)
+                    end_dt = self._parse_datetime(event.end_time) if event.end_time else None
+                    
+                    if not end_dt:
+                        end_dt = start_dt + timedelta(hours=1)
+                    
+                    duration_minutes = int((end_dt - start_dt).total_seconds() / 60)
+                    
+                    processed.append({
+                        'event': event,
+                        'start_hour': start_dt.hour,
+                        'start_minute': start_dt.minute,
+                        'end_hour': end_dt.hour,
+                        'end_minute': end_dt.minute,
+                        'duration_minutes': duration_minutes,
+                        'start_datetime': start_dt,
+                        'end_datetime': end_dt
+                    })
+                except Exception as e:
+                    logger.error(f"Ошибка обработки события {event.id}: {e}")
+                    continue
+        return processed
+
+    def _parse_datetime(self, dt_value):
+        """Парсинг datetime из разных форматов"""
+        if isinstance(dt_value, str):
+            # Убираем Z и преобразуем
+            if 'Z' in dt_value:
+                dt_value = dt_value.replace('Z', '+00:00')
+            return datetime.fromisoformat(dt_value)
+        return dt_value
     
     def week_index(self):
         """Недельное представление"""
@@ -239,8 +222,6 @@ class TaskController:
                 week_days=[],
                 week_start=week_start.strftime("%Y-%m-%d")
             )
-    
-    # ========== СОЗДАНИЕ ЗАДАЧ И СОБЫТИЙ ==========
     
     def create_task_page(self):
         """Страница создания задачи"""
@@ -347,8 +328,6 @@ class TaskController:
                 )
         
         return render_template("create_event.html", user_name=user_name)
-    
-    # ========== API ЭНДПОИНТЫ ==========
     
     def check_task(self):
         """API: Отметить задачу как выполненную"""

@@ -25,4 +25,3 @@ class StatisticsSchema(BaseModel):
     negative_differences: int
     total_positive_time: int
     total_negative_time: int
-    efficiency_score: float | None = None

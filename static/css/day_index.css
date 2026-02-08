@@ -261,9 +261,26 @@ body {
 }
 
 .btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
     background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* ===== COMPACT STATISTICS ===== */
 .stats-global-controls {
     display: flex;
     justify-content: flex-end;
@@ -300,7 +317,6 @@ body {
     transform: rotate(180deg);
 }
 
-/* ===== COMPACT STATISTICS ===== */
 .compact-stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -564,7 +580,6 @@ body {
     display: block;
 }
 
-/* Показатель свернутости */
 .collapsed-indicator {
     position: absolute;
     right: 16px;
@@ -578,20 +593,6 @@ body {
 .compact-stats-grid.all-collapsed .collapsed-indicator {
     opacity: 1;
 }
-/* Стили для полноразмерного режима */
-.stats-grid.expanded .compact-stat-card {
-    padding: 24px;
-}
-
-.stats-grid.expanded .compact-stat-content {
-    max-height: none !important;
-    opacity: 1 !important;
-}
-
-.stats-grid.expanded .compact-expand-btn {
-    display: none;
-}
-
 
 /* ===== CONTENT GRID ===== */
 .content-grid {
@@ -902,6 +903,8 @@ body {
     border-radius: 12px;
     color: white;
     font-weight: 600;
+    display: inline-block;
+    margin-top: 5px;
 }
 
 .task-badge-success {
@@ -1166,6 +1169,21 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
+.modal-cancel {
+    background: #f8f9fa;
+    color: #666;
+    border: 1px solid #ddd;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-cancel:hover {
+    background: #e9ecef;
+}
+
 /* ===== TASK DETAILS MODAL ===== */
 .task-preview {
     background: var(--background-color);
@@ -1335,9 +1353,7 @@ body {
     .content-grid {
         grid-template-columns: 1fr;
     }
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    
     .compact-stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1364,28 +1380,15 @@ body {
     
     .action-buttons {
         width: 100%;
+        justify-content: center;
     }
     
-    .action-buttons .create-btn {
+    .action-buttons .create-btn,
+    .action-buttons .btn-secondary {
         flex: 1;
         justify-content: center;
     }
     
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .time-stats-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .time-stat-item.warning {
-        border-right: none;
-        border-bottom: 2px solid #f0f0f0;
-        padding-right: 0;
-        padding-bottom: 15px;
-    }
     .compact-stats-grid {
         grid-template-columns: 1fr;
     }
@@ -1396,24 +1399,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .time-stats-container {
-        gap: 10px;
-    }
-    
-    .time-stat-item {
-        padding: 12px;
-    }
-    
-    .time-stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
-    
-    .time-stat-value {
-        font-size: 24px;
-    }
-    
     .view-switcher {
         flex-direction: column;
     }
@@ -1426,21 +1411,7 @@ body {
     .time-suggestions {
         justify-content: center;
     }
-    .time-stat-card {
-        flex-direction: column;
-        gap: 20px;
-    }
     
-    .time-stat-section.warning {
-        border-right: none;
-        border-bottom: 2px solid #f0f0f0;
-        padding-right: 0;
-        padding-bottom: 20px;
-    }
-    
-    .time-stat-value {
-        font-size: 28px;
-    }
     .compact-stat-summary {
         grid-template-columns: 1fr 1fr;
     }
@@ -1451,5 +1422,9 @@ body {
     
     .compact-quality-value {
         font-size: 16px;
+    }
+    
+    .tasks-tabs {
+        flex-direction: column;
     }
 }

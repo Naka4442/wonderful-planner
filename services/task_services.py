@@ -92,14 +92,6 @@ class TaskServices:
         completion_rate = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
         average_difficulty = (total_difficulty / completed_tasks) if completed_tasks > 0 else 0
         
-        # Рассчитываем эффективность (можно настроить свою формулу)
-        efficiency_score = None
-        if completed_tasks > 0:
-            efficiency_score = max(0, min(100, 
-                (completed_tasks / total_tasks * 50) + 
-                (max(0, 50 - (pos_total / completed_tasks) * 10))
-            ))
-        
         return StatisticsSchema(
             total_tasks=total_tasks,
             completed_tasks=completed_tasks,
@@ -109,5 +101,4 @@ class TaskServices:
             negative_differences=neg_count,
             total_positive_time=pos_total,
             total_negative_time=neg_total,
-            efficiency_score=round(efficiency_score, 1) if efficiency_score else None
         )

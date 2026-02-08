@@ -40,3 +40,9 @@ class TaskRouter(AbstractRouter):
             methods=["GET"],
             endpoint="get_task_details"
         )
+        self.app.add_url_rule(
+            "/api/task/check",
+            view_func=self.task_controller.check_task,
+            methods=["POST"],
+            endpoint="check_task"
+        )

@@ -10,7 +10,7 @@ const taskCheckButton = document.querySelector(".check-task-modal-button");
 let activeTaskId;
 
 const checkTask = async (taskId, minutes) => {
-    const response = await fetch('/check', {
+    const response = await fetch('/api/task/check', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

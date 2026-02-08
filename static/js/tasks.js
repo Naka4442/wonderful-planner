@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Показываем нужную вкладку
             taskLists.forEach(list => list.classList.remove('active'));
+            console.log(document.getElementById(tabId + '-tasks'));
             document.getElementById(tabId + '-tasks').classList.add('active');
         });
     });
