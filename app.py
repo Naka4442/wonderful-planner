@@ -78,7 +78,7 @@ task_controller = TaskController(task_services)
 
 # Роутеры
 user_router = UserRouter(app, "users", user_controller)
-task_router = TaskRouter(app, "task", task_controller)
+task_router = TaskRouter(app, "tasks", task_controller)
 # task_router = TaskRouter(app, "task", task_controller)
 
 

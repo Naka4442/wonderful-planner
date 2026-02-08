@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block styles %}{% endblock %}
+    <title>{% block title %}Планер{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div></div>
+        <h1 id = "day-header">{% block header %}Планер{% endblock %}</h1>
+        <div class="profile">
+            {% if user_name %}
+            <a href="">{{ user_name }}</a>
+            <!-- <a href="{{ url_for('day_index') }}">{{ user_name }}</a> -->
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block modals %}{% endblock %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -36,6 +36,9 @@ class TaskSchema(BaseModel):
     user_id: int
     created: datetime
 
+    class Config:
+        from_attributes = True
+
 
 class TaskCreateDto(BaseModel):
     title: str

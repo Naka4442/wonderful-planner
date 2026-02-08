@@ -33,6 +33,11 @@ from .user_info import (
     UserInfoSchema,
     UserInfoCreateDto
 )
+from .schedule import (
+    ScheduleDaySchema,
+    ScheduleWeekSchema,
+    StatisticsSchema
+)
 
 __all__ = [
     # База
@@ -60,4 +65,8 @@ __all__ = [
     "UserInfoQuestionSchema",
     "UserInfoSchema",
     "UserInfoCreateDto",
+    # Расписание
+    "ScheduleDaySchema",
+    "ScheduleWeekSchema",
+    "StatisticsSchema",
 ]

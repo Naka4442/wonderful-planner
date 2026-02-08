@@ -9,11 +9,17 @@ class TaskRouter(AbstractRouter):
         super().__init__(app, url_name)
 
     def setup_routes(self):
-        self.router.add_url_rule(
+        self.app.add_url_rule(
             "/",
             view_func=self.task_controller.day_index,
             methods=["GET"],
             endpoint="day_index"
+        )
+        self.router.add_url_rule(
+            "/week/",
+            view_func=self.task_controller.week_index,
+            methods=["GET"],
+            endpoint="week_index"
         )
         self.router.add_url_rule(
             "/create/task/",
@@ -26,4 +32,11 @@ class TaskRouter(AbstractRouter):
             view_func=self.task_controller.create_event,
             methods=["GET", "POST"],
             endpoint="create_event"
+        )
+        # API
+        self.app.add_url_rule(
+            "/api/task/<int:task_id>",
+            view_func=self.task_controller.get_task_details,
+            methods=["GET"],
+            endpoint="get_task_details"
         )

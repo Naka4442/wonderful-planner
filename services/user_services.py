@@ -19,7 +19,7 @@ class UserServices:
     def get_user_info_questions(self) -> List[UserInfoQuestionSchema]:
         return self.user_info_repo.get_questions()
 
-    def signup(self, user_data: UserSignupDto) -> None:
+    def signup(self, user_data: UserSignupDto) -> UserSchema:
         if self.user_repo.check_user_by_email(user_data.email):
             raise ValueError("Пользователь с таким email уже существует")
         
@@ -37,6 +37,8 @@ class UserServices:
                 points=info.points
             ) for info in user_data.info
         ])
+
+        return user
 
     def signin(self, user_data: UserSigninDto) -> UserSchema:
         user = self.user_repo.get_user_by_email_and_password(user_data)
