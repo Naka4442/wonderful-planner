@@ -1,30 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>{% block title %}Wonderfull Planner{% endblock %}</title>
     {% block styles %}{% endblock %}
-    <title>{% block title %}Планер{% endblock %}</title>
 </head>
 <body>
-    <header>
-        <div></div>
-        <h1 id = "day-header">{% block header %}Планер{% endblock %}</h1>
-        <div class="profile">
-            {% if user_name %}
-            <a href="">{{ user_name }}</a>
-            <!-- <a href="{{ url_for('day_index') }}">{{ user_name }}</a> -->
-            {% endif %}
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-tasks"></i>
+                <span>WonderfulPlaner</span>
+            </div>
+            <h1 class="page-title">{% block header %}Ежедневное планирование{% endblock %}</h1>
+            <div class="user-menu">
+                {% if user_name %}
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                    <p class="user-name">{{ user_name }}</p>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('day_index') }}"><i class="fas fa-user"></i> Профиль</a>
+                        <a href="{{ url_for('day_index') }}"><i class="fas fa-cog"></i> Настройки</a>
+                        <a href="{{ url_for('day_index') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </header>
 
-    <main>
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
     {% block modals %}{% endblock %}
+    
     {% block scripts %}{% endblock %}
+    
+    <script>
+        // Открытие/закрытие dropdown меню пользователя
+        document.addEventListener('DOMContentLoaded', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) {
+                userProfile.addEventListener('click', function(e) {
+                    if (e.target.closest('.user-profile')) {
+                        this.classList.toggle('active');
+                    }
+                });
+                
+                // Закрытие при клике вне меню
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.user-profile')) {
+                        userProfile.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

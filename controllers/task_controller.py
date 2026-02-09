@@ -166,6 +166,7 @@ class TaskController:
     def week_index(self):
         """Главная страница недельного расписания"""
         try:
+            user_id, user_name = self._check_auth()
             # Определяем дату начала недели
             selected_date_str = request.args.get('week_start')
             if selected_date_str:
@@ -181,13 +182,13 @@ class TaskController:
             
             # Получаем расписание на неделю
             week_schedule = self.task_service.get_weekly_schedule(
-                user_id=1,  # Здесь должен быть реальный user_id из сессии
+                user_id,  # Здесь должен быть реальный user_id из сессии
                 week_start=selected_date
             )
             
             # Получаем статистику за неделю
             week_statistics = self.task_service.get_weekly_statistics(
-                user_id=1,
+                user_id,
                 week_start=selected_date
             )
             
