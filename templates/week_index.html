@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}Недельное планирование | WonderfullPlanner{% endblock %}
+{% block header %}Недельное планирование{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/schedule.css') }}">
+<style>
+    /* Дополнительные стили для модальных окон */
+    .modal-cancel {
+        background: #f8f9fa;
+        color: #666;
+        border: 1px solid #ddd;
+        padding: 12px 24px;
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .modal-cancel:hover {
+        background: #e9ecef;
+    }
+    
+    /* Стили для списка событий в модальном окне */
+    .modal-body .task-description {
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Верхняя панель управления -->
+    <div class="control-panel">
+        <div class="week-navigation">
+            <a href="{{ url_for('week_index', week_start=prev_week.isoformat()) }}" class="nav-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            
+            <div class="week-range">
+                <span>{{ week_start.strftime('%d.%m') }} - {{ week_end.strftime('%d.%m') }}</span>
+            </div>
+            
+            <a href="{{ url_for('week_index', week_start=next_week.isoformat()) }}" class="nav-btn">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+        <div class="view-switcher">
+            <a href="{{ url_for('day_index') }}" class="view-btn">
+                <i class="fas fa-calendar-day"></i>
+                <span>День</span>
+            </a>
+            <a href="{{ url_for('week_index') }}" class="view-btn active">
+                <i class="fas fa-calendar-week"></i>
+                <span>Неделя</span>
+            </a>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="create-btn" data-action="create-task">
+                <i class="fas fa-plus-circle"></i>
+                <span>Новая задача</span>
+            </button>
+            <button class="create-btn btn-secondary" data-action="create-event">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Новое событие</span>
+            </button>
+        </div>
+        
+
+    </div>
+
+    <!-- Компактная статистика за неделю -->
+    <div class="stats-section">
+        <!-- Кнопка управления всеми секциями -->
+        <div class="stats-global-controls">
+            <button class="toggle-all-stats-btn" id="toggle-all-stats">
+                <i class="fas fa-chevron-up"></i>
+                <span>Свернуть статистику</span>
+            </button>
+        </div>
+        
+        <!-- Сетка статистики -->
+        <div class="compact-stats-grid" id="stats-container">
+            <!-- Блок 1: Продуктивность за неделю -->
+            <div class="compact-stat-card" data-stat-type="productivity">
+                <div class="compact-stat-header">
+                    <div class="compact-stat-title productivity">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Продуктивность недели</span>
+                    </div>
+                    <span class="collapsed-indicator">Свернуто</span>
+                </div>
+                
+                <div class="compact-stat-content">
+                    <div class="compact-stat-summary">
+                        <div class="compact-stat-item">
+                            <span class="compact-stat-label">Всего задач</span>
+                            <span class="compact-stat-value" id="total-tasks-week">{{ statistics.total_tasks if statistics else 0 }}</span>
+                        </div>
+                        <div class="compact-stat-item">
+                            <span class="compact-stat-label">Выполнено</span>
+                            <span class="compact-stat-value" id="completed-tasks-week">{{ statistics.completed_tasks if statistics else 0 }}</span>
+                            <span class="compact-stat-subtext" id="completion-rate-week">
+                                {% if statistics and statistics.total_tasks > 0 %}
+                                {{ (statistics.completed_tasks / statistics.total_tasks * 100)|round(1) }}%
+                                {% else %}0%{% endif %}
+                            </span>
+                        </div>
+                        <div class="compact-stat-item">
+                            <span class="compact-stat-label">Активных дней</span>
+                            <span class="compact-stat-value" id="active-days">
+                                {% if week_data %}
+                                    {{ week_data|selectattr('tasks')|list|length }}
+                                {% else %}0{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Блок 2: Время выполнения за неделю -->
+            <div class="compact-stat-card" data-stat-type="time">
+                <div class="compact-stat-header">
+                    <div class="compact-stat-title time">
+                        <i class="fas fa-clock"></i>
+                        <span>Баланс времени</span>
+                    </div>
+                    <span class="collapsed-indicator">Свернуто</span>
+                </div>
+                
+                <div class="compact-stat-content">
+                    <div class="compact-time-stats">
+                        <div class="compact-time-item">
+                            <div class="compact-time-label">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i>
+                                <span>Переработка</span>
+                            </div>
+                            <div class="compact-time-numbers">
+                                <span class="compact-time-count" id="overdue-tasks-week">
+                                    {{ statistics.negative_differences if statistics else 0 }}
+                                </span>
+                                <span class="compact-time-duration" id="overdue-time-week">
+                                    {% if statistics %}{{ statistics.total_negative_time }}{% else %}0{% endif %} мин
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-time-item">
+                            <div class="compact-time-label">
+                                <i class="fas fa-forward" style="color: var(--secondary-color);"></i>
+                                <span>Экономия</span>
+                            </div>
+                            <div class="compact-time-numbers">
+                                <span class="compact-time-count" id="early-tasks-week">
+                                    {{ statistics.positive_differences if statistics else 0 }}
+                                </span>
+                                <span class="compact-time-duration" id="saved-time-week">
+                                    {% if statistics %}{{ statistics.total_positive_time }}{% else %}0{% endif %} мин
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if statistics %}
+                        {% set time_balance_week = statistics.total_positive_time - statistics.total_negative_time %}
+                    {% else %}
+                        {% set time_balance_week = 0 %}
+                    {% endif %}
+                    <div class="compact-balance">
+                        <div class="compact-balance-label">Итоговый баланс</div>
+                        <div class="compact-balance-value {% if time_balance_week > 0 %}positive{% else %}negative{% endif %}" id="week-time-balance">
+                            {% if time_balance_week > 0 %}+{% endif %}{{ time_balance_week }} мин
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Блок 3: Качество работы за неделю -->
+            <div class="compact-stat-card" data-stat-type="quality">
+                <div class="compact-stat-header">
+                    <div class="compact-stat-title quality">
+                        <i class="fas fa-award"></i>
+                        <span>Итоги недели</span>
+                    </div>
+                    <span class="collapsed-indicator">Свернуто</span>
+                </div>
+                
+                <div class="compact-stat-content">
+                    <div class="compact-quality-metrics">
+                        <div class="compact-quality-item">
+                            <div class="compact-quality-icon tasks">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="compact-quality-content">
+                                <span class="compact-quality-label">Завершение</span>
+                                <span class="compact-quality-value" id="weekly-completion">
+                                    {% if statistics and statistics.total_tasks > 0 %}
+                                    {{ (statistics.completed_tasks / statistics.total_tasks * 100)|round(1) }}%
+                                    {% else %}0%{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-quality-item">
+                            <div class="compact-quality-icon difficulty">
+                                <i class="fas fa-signal"></i>
+                            </div>
+                            <div class="compact-quality-content">
+                                <span class="compact-quality-label">Сред. сложность</span>
+                                <span class="compact-quality-value" id="weekly-avg-difficulty">
+                                    {{ statistics.average_difficulty|round(1) if statistics else 0 }}
+                                </span>
+                                <span class="compact-quality-subtext">из 10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="compact-quality-item">
+                            <div class="compact-quality-icon efficiency">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="compact-quality-content">
+                                <span class="compact-quality-label">Эффективность</span>
+                                {% if statistics and statistics.efficiency_score %}
+                                <span class="compact-quality-value" id="weekly-efficiency">
+                                    {{ statistics.efficiency_score|round(1) }}%
+                                </span>
+                                {% else %}
+                                <span class="compact-quality-value">—</span>
+                                <span class="compact-quality-subtext">нет данных</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент - недельное расписание -->
+    <div class="week-content">
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="week-grid" id="week-grid">
+            <!-- Заголовки дней недели -->
+            <div class="week-days-header">
+                <div class="day-header time-column">
+                    <div class="time-label">Время</div>
+                </div>
+                {% for day_data in week_data %}
+                <div class="day-header {% if day_data.is_today %}today{% endif %}" data-date="{{ day_data.date }}">
+                    <div class="day-name">{{ day_data.day_name }}</div>
+                    <div class="day-date">{{ day_data.date_str }}</div>
+                    <div class="day-stats">
+                        <span class="day-stat tasks">
+                            <i class="fas fa-tasks"></i>
+                            {{ day_data.tasks|length }}
+                        </span>
+                        <span class="day-stat events">
+                            <i class="fas fa-calendar"></i>
+                            {{ day_data.events|length }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Сетка времени -->
+            <div class="week-time-grid">
+            <!-- Боковая колонка с часами -->
+            <div class="time-column">
+                {% for hour in range(24) %}
+                <div class="time-slot" data-hour="{{ hour }}">
+                    <div class="time-label-hour">
+                        {% if hour < 10 %}0{{ hour }}{% else %}{{ hour }}{% endif %}:00
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Колонки дней -->
+            {% for day_data in week_data %}
+            <div class="day-column {% if day_data.is_today %}today-column{% endif %}" data-date="{{ day_data.date }}">
+                <!-- Левый столбец для задач -->
+                <div class="day-time-column task-column">
+                    {% for hour in range(24) %}
+                    <div class="day-time-slot" data-hour="{{ hour }}" data-date="{{ day_data.date }}">
+                        <!-- Задачи для этого часа и дня -->
+                        {% for task_data in day_data.processed_tasks %}
+                            {% if task_data.start_hour == hour %}
+                            <div class="week-item task-item"
+                                style="top: {{ task_data.start_minute }}px;
+                                        height: {{ task_data.duration_minutes }}px;"
+                                data-task-id="{{ task_data.task.id }}"
+                                data-action="show-details"
+                                data-date="{{ day_data.date }}"
+                                title="{{ task_data.task.title }} - {{ task_data.start_datetime.strftime('%H:%M') }} ({{ task_data.duration_minutes }} мин)">
+                                <div class="week-item-content">
+                                    <div class="item-title">{{ task_data.task.title }}</div>
+                                    <div class="item-time">
+                                        <i class="far fa-clock"></i>
+                                        {{ task_data.start_datetime.strftime("%H:%M") }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Правый столбец для событий -->
+                <div class="day-time-column event-column">
+                    {% for hour in range(24) %}
+                    <div class="day-time-slot" data-hour="{{ hour }}" data-date="{{ day_data.date }}">
+                        <!-- События для этого часа и дня -->
+                        {% for event_data in day_data.processed_events %}
+                            {% if event_data.start_hour == hour %}
+                            <div class="week-item event-item"
+                                style="top: {{ event_data.start_minute }}px;
+                                        height: {{ event_data.duration_minutes }}px;"
+                                data-event-id="{{ event_data.event.id }}"
+                                data-action="show-event-details"
+                                data-date="{{ day_data.date }}"
+                                title="{{ event_data.event.title }} - {{ event_data.start_datetime.strftime('%H:%M') }}{% if event_data.end_datetime %} до {{ event_data.end_datetime.strftime('%H:%M') }}{% endif %}">
+                                <div class="week-item-content">
+                                    <div class="item-title">{{ event_data.event.title }}</div>
+                                    <div class="item-time">
+                                        <i class="far fa-calendar"></i>
+                                        {{ event_data.start_datetime.strftime("%H:%M") }}
+                                    </div>
+                                    {% if event_data.event.is_repeated %}
+                                    <div class="item-recurring">
+                                        <i class="fas fa-redo"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Блок для отображения задач без времени -->
+                <div class="unscheduled-tasks">
+                    {% for task in day_data.undone_tasks %}
+                        {% if not task.start_time %}
+                        <div class="unscheduled-task" data-task-id="{{ task.id }}">
+                            <div class="unscheduled-task-content">
+                                <i class="fas fa-clock"></i>
+                                {{ task.title }}
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn-small btn-info" data-action="show-details" data-task-id="{{ task.id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/week_view.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+{% endblock %}

@@ -1,26 +1,48 @@
-from sqlalchemy.orm import Session
-from models import User
+from typing import List
 from flask import session
+
+from models.user import UserCreateDto, UserSchema, UserSigninDto, UserSignupDto
+from models.user_info import UserInfoCreateDto, UserInfoQuestionSchema
+from repositories.user_info_repository import UserInfoRepository
+from repositories.user_repository import UserRepository
 
 
 class UserServices:
-    def __init__(self, db: Session ):
-        self.db = db
+    def __init__(
+            self, 
+            user_repository: UserRepository,
+            user_info_repository: UserInfoRepository
+        ):
+        self.user_repo = user_repository
+        self.user_info_repo = user_info_repository
 
-    def signup(self, name: str, email: str, password: str, password2: str):
-        same_email = self.db.query(User).filter(User.email == email).first()
-        if same_email:
+    def get_user_info_questions(self) -> List[UserInfoQuestionSchema]:
+        return self.user_info_repo.get_questions()
+
+    def signup(self, user_data: UserSignupDto) -> UserSchema:
+        if self.user_repo.check_user_by_email(user_data.email):
             raise ValueError("Пользователь с таким email уже существует")
-        if password != password2:
+        
+        if user_data.password != user_data.password2:
             raise ValueError("Пароли не совпадают")
 
-        user = User(name=name, email=email, password=password)
-        self.db.add(user)
-        self.db.commit()
+        user = self.user_repo.create(UserCreateDto(
+            **user_data.model_dump(exclude=["password2", "info"])
+        ))
 
-    def signin(self, email: str, password: str) -> User:
-        user = self.db.query(User).filter(User.email == email, User.password == password).first()
-        if not user:
+        self.user_info_repo.bulk_create_info([
+            UserInfoCreateDto(
+                user_id=user.id,
+                question_id=info.question_id,
+                points=info.points
+            ) for info in user_data.info
+        ])
+
+        return user
+
+    def signin(self, user_data: UserSigninDto) -> UserSchema:
+        user = self.user_repo.get_user_by_email_and_password(user_data)
+        if user is None:
             raise ValueError("Пользователь не найден")
         session["user_id"] = user.id
         session["user_name"] = user.name

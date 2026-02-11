@@ -1,36 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/signup.mobile.css') }}">
-    <title>Регистрация</title>
-</head>
-<body>
-    <main>
-        <form action="" method="post"> 
-            <h1>Регистрация</h1>
-            <input type="text" name="name" id="" placeholder="Имя">
-            <input type="text" name="email" id="" placeholder="Почта">
-            <input type="password" name="password" placeholder="Пароль">
-            <input type="password" name="password2" placeholder="Повторите пароль">
-            <label for="">Я обычно могу заранее достаточно оценить,сколько времени займет задача</label>
-            <input type="number" name="question" id="" min="1" max="5" >
-            <label for="">Мои планы на день обычно соответствуется тому,что я реально успеваю делать</label>
-            <input type="number" name="question" id="" min="1" max="5" >
-            <label for="">Я чаще начинаю выполнять задачи в запланированное время,а не откладываю их</label>
-            <input type="number" name="question" id="" min="1" max="5" >
-            <label for="">Я могу работать над задачей,не отвлекаясь</label>
-            <input type="number" name="question" id="" min="1" max="5" >
-            <label for="">Я анализирую,почему какие-то задачи заняли больше или меньше времени,чем я планировал</label>
-            <input type="number" name="question" id="" min="1" max="5">
-            <button type="submit">Регистрация</button>
-            <a href="signin">Вход</a>
-        </form>
-        {% if error %} <p> {{ error }} </p> {% endif %}
+{% extends "base.html" %}
 
-        
-    </main>
-</body>
-</html>
+{% block title %}Регистрация | WonderfullPlanner{% endblock %}
+{% block header %}Создание аккаунта{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-form-wrapper">
+        <form action="{{ url_for('users.signup') }}" method="post" id="signup-form">
+            
+            <!-- Step 1: User Info -->
+            <div id="signup-step-1">
+                <div class="auth-form-header">
+                    <h2>Присоединяйтесь!</h2>
+                    <p>Шаг 1: Основная информация</p>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="name">Имя</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Электронная почта</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Подтвердите пароль</label>
+                    <input type="password" id="password2" name="password2" required>
+                </div>
+                <button type="button" class="btn-auth" id="next-step-btn">Далее</button>
+            </div>
+
+            <!-- Step 2: Questions -->
+            <div id="signup-step-2" class="hidden">
+                <div class="auth-form-header">
+                    <h2>Анкета</h2>
+                    <p>Шаг 2: Ответьте на несколько вопросов</p>
+                </div>
+                
+                {% for question in questions %}
+                <div class="form-group">
+                    <label for="question_{{ question.id }}">{{ question.question }} (1-5)</label>
+                    <input type="number" name="question_{{ question.id }}" id="question_{{ question.id }}" min="1" max="5" required />
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn-auth">Зарегистрироваться</button>
+            </div>
+        </form>
+
+        <div class="auth-switch-link">
+            <p>Уже есть аккаунт? <a href="{{ url_for('users.signin') }}">Войти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const step1 = document.getElementById('signup-step-1');
+    const step2 = document.getElementById('signup-step-2');
+    const nextBtn = document.getElementById('next-step-btn');
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            // Basic validation for step 1
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+
+            if (!name || !email || !password || !password2) {
+                alert('Пожалуйста, заполните все поля.');
+                return;
+            }
+            if (password !== password2) {
+                alert('Пароли не совпадают.');
+                return;
+            }
+
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+        });
+    }
+});
+</script>
+{% endblock %}
