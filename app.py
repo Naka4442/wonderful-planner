@@ -248,10 +248,10 @@ task_router = TaskRouter(app, "tasks", task_controller)
 #         except ValueError as e:
 #             return jsonify({"error": str(e)}), 400
 
-# @app.route("/logout")
-# def logout():
-#     session.clear()
-#     return redirect("/signin")
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/users/signin/")
 
 if __name__ == "__main__":
     debug = os.getenv("FLASK_ENV", "production") == "development"

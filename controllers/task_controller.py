@@ -31,7 +31,7 @@ class TaskController:
         """Проверить аутентификацию и вернуть user_id и user_name"""
         user_id = self._get_user_id()
         if user_id is None:
-            raise redirect(url_for("users.signin"))  # Перенаправление на логин
+            return None, None  # Перенаправление на логин
 
         user_name = self._get_user_name() or "Пользователь"
         return user_id, user_name
@@ -52,10 +52,9 @@ class TaskController:
             return None
 
     def day_index(self):
-        try:
-            user_id, user_name = self._check_auth()
-        except redirect as e:
-            return e
+        user_id, user_name = self._check_auth()
+        if user_id is None:
+            return redirect(url_for("users.signin"))
 
         selected_date = self._parse_date_param(request.args.get("date")) or date.today()
 

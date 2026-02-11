@@ -44,6 +44,8 @@
 .edit-form input[type="text"],
 .edit-form input[type="number"],
 .edit-form input[type="datetime-local"],
+.edit-form input[type="date"], /* Added */
+.edit-form input[type="time"], /* Added */
 .edit-form textarea {
     width: 100%;
     padding: 10px 14px;
@@ -54,7 +56,9 @@
 }
 
 .edit-form input:focus,
-.edit-form textarea:focus {
+.edit-form textarea:focus,
+.edit-form input[type="date"]:focus, /* Added */
+.edit-form input[type="time"]:focus /* Added */ {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(24, 123, 205, 0.1);
