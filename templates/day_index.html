@@ -363,7 +363,7 @@
                             <div class="task-header">
                                 <div class="task-title-wrapper">
                                     <h4>{{ task.title }}</h4>
-                                    <span class="task-badge" style="background-color: {{ ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']|random }};">
+                                    <span class="task-badge" data-difficulty="{{ task.difficulty }}">
                                         Сложность {{ task.difficulty }}
                                     </span>
                                 </div>
@@ -413,7 +413,7 @@
                 <div class="tasks-list" id="done-tasks">
                     {% if done %}
                     {% for task in done %}
-                    <div class="task-card task-completed">
+                    <div class="task-card task-completed" data-action="show-details" data-task-id="{{ task.id }}">
                         <div class="task-header">
                             <div class="task-title-wrapper">
                                 <h4>{{ task.title }}</h4> <!-- Убрали <s> -->

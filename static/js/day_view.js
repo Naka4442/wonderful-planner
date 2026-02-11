@@ -58,4 +58,19 @@ document.addEventListener('DOMContentLoaded', () => {
             tasksLists.querySelector(`#${tab}-tasks`).classList.add('active');
         });
     }
+
+    // --- Apply difficulty colors to task badges ---
+    const applyDifficultyColors = () => {
+        document.querySelectorAll('.task-badge[data-difficulty]').forEach(badge => {
+            const difficulty = parseInt(badge.dataset.difficulty);
+            if (!isNaN(difficulty) && window.wonderPlanner.getDifficultyColor) {
+                badge.style.backgroundColor = window.wonderPlanner.getDifficultyColor(difficulty);
+            }
+        });
+    };
+    applyDifficultyColors(); // Apply on initial load
+    // Re-apply if tabs switch and new tasks become visible, or on any dynamic content update
+    if (tabsContainer) {
+        tabsContainer.addEventListener('click', applyDifficultyColors);
+    }
 });

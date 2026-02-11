@@ -4,60 +4,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Main Event Delegation for Task/Event Actions ---
     document.body.addEventListener('click', async (e) => {
-        console.log('Click event detected on body');
         const actionTarget = e.target.closest('[data-action]');
         if (!actionTarget) {
-            console.log('No actionTarget found, returning.');
             return;
         }
 
         const action = actionTarget.dataset.action;
         const id = actionTarget.closest('[data-task-id], [data-event-id]')?.dataset.taskId || actionTarget.closest('[data-task-id], [data-event-id]')?.dataset.eventId;
-                console.log('Action:', action, 'ID:', id);
                 
                 const isCrudAction = ['delete-task', 'delete-event', 'edit-task', 'edit-event', 'create-task', 'create-event', 'show-details', 'show-event-details', 'close-modal', 'complete-task-button', 'show-complete-modal-button'].includes(action);
                 
                 if (!isCrudAction) {
-                    console.log('Action is not a CRUD action, returning:', action);
                     return;
                 }
         
-                console.log('Entering switch with action:', action, ' (Type:', typeof action, ')');
                 switch (action) {
                     case 'delete-task':
-                        console.log('Case: delete-task');
                         handleDelete(id, 'task');
                         break;
                     case 'delete-event':
-                        console.log('Case: delete-event');
                         handleDelete(id, 'event');
                         break;
                     case 'edit-task':
-                        console.log('Case: edit-task');
                         handleEdit(id, 'task');
                         break;
                     case 'edit-event':
-                        console.log('Case: edit-event');
                         handleEdit(id, 'event');
                         break;
                     case 'create-task':
-                        console.log('Case: create-task');
                         handleEdit(null, 'task');
                         break;
                     case 'create-event':
-                        console.log('Case: create-event');
                         handleEdit(null, 'event');
                         break;
                     case 'show-details':
-                        console.log('Case: show-details');
                         window.wonderPlanner.modals.showTaskDetails(id);
                         break;
                     case 'show-event-details':
-                        console.log('Case: show-event-details');
                         window.wonderPlanner.modals.showEventDetails(id);
                         break;
                     case 'complete-task-button':
-                        console.log('Case: complete-task-button');
                         try {
                             const { task } = await api.getTask(id);
                             window.wonderPlanner.modals.showCompleteModal(task, null); // Pass null as checkbox since it's a button
@@ -66,25 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         break;
                     case 'close-modal':
-                        console.log('Case: close-modal');
                         const modalToClose = actionTarget.closest('.modal-overlay');
                         if (modalToClose) {
                             modalToClose.classList.add('hidden');
                         }
                         break;
                     case 'show-complete-modal-button':
-                        console.log('Case: show-complete-modal-button triggered.');
                         const completeButton = actionTarget.closest('button[data-action="show-complete-modal-button"]');
                         const completeTaskId = completeButton.dataset.taskId;
-                        console.log('Extracted Task ID for completion:', completeTaskId);
                         
                         try {
-                            console.log('Calling api.getTask for ID:', completeTaskId);
                             const { task } = await api.getTask(completeTaskId);
-                            console.log('Task data fetched for completion:', task);
-                            console.log('Calling window.wonderPlanner.modals.showCompleteModal with task:', task);
                             window.wonderPlanner.modals.showCompleteModal(task, null); // No checkbox to pass
-                            console.log('window.wonderPlanner.modals.showCompleteModal called.');
                         } catch (error) {
                             console.error('Error in show-complete-modal-button handler:', error);
                             alert(`Ошибка загрузки задачи для завершения: ${error.message}`);
@@ -182,6 +161,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (submitData.difficulty) submitData.difficulty = parseInt(submitData.difficulty);
                 if (submitData.supposed_time) submitData.supposed_time = parseInt(submitData.supposed_time);
                 
+                // Combine date and time fields for start_time
+                if (submitData.start_date && submitData.start_time_input) {
+                    submitData.start_time = `${submitData.start_date}T${submitData.start_time_input}`;
+                } else if (submitData.start_date) {
+                    submitData.start_time = `${submitData.start_date}T00:00`; // Default time if only date is provided
+                } else {
+                    submitData.start_time = null;
+                }
+                delete submitData.start_date;
+                delete submitData.start_time_input;
+
+                // Combine date and time fields for end_time (only for events)
+                if (type === 'event' && submitData.end_date && submitData.end_time_input) {
+                    submitData.end_time = `${submitData.end_date}T${submitData.end_time_input}`;
+                } else if (type === 'event' && submitData.end_date) {
+                    submitData.end_time = `${submitData.end_date}T23:59`; // Default end time if only date is provided
+                } else if (type === 'event') {
+                    submitData.end_time = null;
+                }
+                delete submitData.end_date;
+                delete submitData.end_time_input;
+                
                 // Handle checkbox for is_repeated in event form
                 if (type === 'event' && form.querySelector('#is_repeated')) {
                      submitData.is_repeated = form.querySelector('#is_repeated').checked;
@@ -241,8 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                      <div class="form-group">
-                        <label for="start_time">Время начала</label>
-                        <input type="datetime-local" id="start_time" name="start_time" value="${toLocalISOString(data.start_time)}">
+                        <label for="start_date">Дата начала</label>
+                        <input type="date" id="start_date" name="start_date" value="${data.start_time ? toLocalISOString(data.start_time).split('T')[0] : ''}">
+                    </div>
+                     <div class="form-group">
+                        <label for="start_time_input">Время начала</label>
+                        <input type="time" id="start_time_input" name="start_time_input" value="${data.start_time ? toLocalISOString(data.start_time).split('T')[1] : ''}">
                     </div>
                 </form>
             `;
@@ -258,12 +263,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         <textarea id="description" name="description">${data.description || ''}</textarea>
                     </div>
                      <div class="form-group">
-                        <label for="start_time">Время начала</label>
-                        <input type="datetime-local" id="start_time" name="start_time" value="${toLocalISOString(data.start_time)}" required>
+                        <label for="start_date">Дата начала</label>
+                        <input type="date" id="start_date" name="start_date" value="${data.start_time ? toLocalISOString(data.start_time).split('T')[0] : ''}" required>
                     </div>
                      <div class="form-group">
-                        <label for="end_time">Время окончания</label>
-                        <input type="datetime-local" id="end_time" name="end_time" value="${toLocalISOString(data.end_time)}">
+                        <label for="start_time_input">Время начала</label>
+                        <input type="time" id="start_time_input" name="start_time_input" value="${data.start_time ? toLocalISOString(data.start_time).split('T')[1] : ''}" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="end_date">Дата окончания</label>
+                        <input type="date" id="end_date" name="end_date" value="${data.end_time ? toLocalISOString(data.end_time).split('T')[0] : ''}">
+                    </div>
+                     <div class="form-group">
+                        <label for="end_time_input">Время окончания</label>
+                        <input type="time" id="end_time_input" name="end_time_input" value="${data.end_time ? toLocalISOString(data.end_time).split('T')[1] : ''}">
                     </div>
                     <div class="form-grid">
                         <div class="form-group">

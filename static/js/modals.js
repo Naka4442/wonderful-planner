@@ -1,6 +1,5 @@
 // This file contains logic for populating and interacting with modals.
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("modals.js loaded");
 
     // Ensure wonderPlanner and wonderPlanner.modals objects exist
     window.wonderPlanner = window.wonderPlanner || {};
@@ -90,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         showTaskDetails: async (taskId) => {
             window.wonderPlanner.modals.hideAllModals(); // Hide all other modals first
-            console.log('showTaskDetails called for taskId:', taskId);
             try {
                 const { task } = await window.wonderPlanner.api.getTask(taskId);
                 const modal = document.getElementById('task-details-modal');
@@ -129,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 
                 footer.innerHTML = `
-                    <button class="btn-secondary modal-cancel" data-action="close-modal">Закрыть</button>
                     <button class="btn-danger" data-action="delete-task" data-task-id="${task.id}"><i class="fas fa-trash"></i> Удалить</button>
                     ${!task.is_done ? `<button class="btn-primary" data-action="complete-task-button" data-task-id="${task.id}"><i class="fas fa-check"></i> Завершить</button>` : ''}
                     <button class="btn-info" data-action="edit-task" data-task-id="${task.id}"><i class="fas fa-edit"></i> Редактировать</button>
@@ -144,69 +141,67 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
     
-        showEventDetails: async (eventId) => {
-            window.wonderPlanner.modals.hideAllModals(); // Hide all other modals first
-            console.log('showEventDetails called for eventId:', eventId);
-            try {
-                const { event } = await window.wonderPlanner.api.getEvent(eventId);
-                const modal = document.getElementById('event-details-modal');
-                const footer = document.getElementById('event-details-footer'); // Get footer here
-    
-                if (!modal || !footer) {
-                    console.error('Event details modal or footer element not found.');
-                    alert('Не удалось загрузить детали события: Не найдены элементы модального окна.');
-                    return;
-                }
-    
-                document.getElementById('event-details-content').innerHTML = `
-                    <div class="event-details">
-                        <h4>${event.title}</h4>
-                        <p class="event-description">${event.description || 'Нет описания'}</p>
-                        <div class="details-grid">
-                            <div class="detail-item">
-                                <i class="fas fa-star"></i>
-                                <span>Важность:</span>
-                                <strong>${event.difficulty}/10</strong>
+                showEventDetails: async (eventId) => {
+                    window.wonderPlanner.modals.hideAllModals(); // Hide all other modals first
+                    try {
+                        const { event } = await window.wonderPlanner.api.getEvent(eventId);
+                        const modal = document.getElementById('event-details-modal');
+                        const footer = document.getElementById('event-details-footer'); // Get footer here
+            
+                        if (!modal || !footer) {
+                            console.error('Event details modal or footer element not found.');
+                            alert('Не удалось загрузить детали события: Не найдены элементы модального окна.');
+                            return;
+                        }
+            
+                        document.getElementById('event-details-content').innerHTML = `
+                            <div class="event-details">
+                                <h4>${event.title}</h4>
+                                <p class="event-description">${event.description || 'Нет описания'}</p>
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <i class="fas fa-star"></i>
+                                        <span>Важность:</span>
+                                        <strong>${event.difficulty}/10</strong>
+                                    </div>
+                                    ${event.start_time ? `
+                                    <div class="detail-item">
+                                        <i class="far fa-calendar"></i>
+                                        <span>Начало:</span>
+                                        <strong>${new Date(event.start_time).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'})} ${new Date(event.start_time).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</strong>
+                                    </div>
+                                    ` : ''}
+                                    ${event.end_time ? `
+                                    <div class="detail-item">
+                                        <i class="far fa-calendar"></i>
+                                        <span>Окончание:</span>
+                                        <strong>${new Date(event.end_time).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'})} ${new Date(event.end_time).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</strong>
+                                    </div>
+                                    ` : ''}
+                                    ${event.is_repeated ? `
+                                    <div class="detail-item">
+                                        <i class="fas fa-redo"></i>
+                                        <span>Повторяется</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
                             </div>
-                            ${event.start_time ? `
-                            <div class="detail-item">
-                                <i class="far fa-calendar"></i>
-                                <span>Начало:</span>
-                                <strong>${new Date(event.start_time).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'})} ${new Date(event.start_time).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</strong>
-                            </div>
-                            ` : ''}
-                            ${event.end_time ? `
-                            <div class="detail-item">
-                                <i class="far fa-calendar"></i>
-                                <span>Окончание:</span>
-                                <strong>${new Date(event.end_time).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'})} ${new Date(event.end_time).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</strong>
-                            </div>
-                            ` : ''}
-                            ${event.is_repeated ? `
-                            <div class="detail-item">
-                                <i class="fas fa-redo"></i>
-                                <span>Повторяется</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-    
-                footer.innerHTML = `
-                    <button class="btn-secondary modal-cancel" data-action="close-modal">Закрыть</button>
-                    <button class="btn-danger btn-small" data-action="delete-event" data-event-id="${event.id}"><i class="fas fa-trash"></i></button>
-                    <button class="btn-primary" data-action="edit-event" data-event-id="${event.id}"><i class="fas fa-edit"></i> Редактировать</button>
-                `;
-    
-                modal.classList.remove('hidden');
-                // Force a reflow
-                void modal.offsetWidth;
-            } catch (error) {
-                console.error('Error in showEventDetails:', error);
-                alert(`Не удалось загрузить детали события: ${error.message}`);
-            }
-        },
-        
+                        `;
+            
+                        footer.innerHTML = `
+                            <button class="btn-secondary modal-cancel" data-action="close-modal">Закрыть</button>
+                            <button class="btn-danger btn-small" data-action="delete-event" data-event-id="${event.id}"><i class="fas fa-trash"></i></button>
+                            <button class="btn-primary" data-action="edit-event" data-event-id="${event.id}"><i class="fas fa-edit"></i> Редактировать</button>
+                        `;
+                        
+                        modal.classList.remove('hidden');
+                        // Force a reflow
+                        void modal.offsetWidth;
+                    } catch (error) {
+                        console.error('Error in showEventDetails:', error);
+                        alert(`Не удалось загрузить детали события: ${error.message}`);
+                    }
+                },        
         showCompleteModal: (task, checkbox) => {
             window.wonderPlanner.modals.hideAllModals(); // Hide all other modals first
             

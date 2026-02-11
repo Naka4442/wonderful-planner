@@ -19,14 +19,26 @@ window.wonderPlanner.api = {
 
         try {
             const response = await fetch(url, options);
-            if (!response.ok) {
-                const errorData = await response.json();
-                // Use detailed Pydantic error if available
-                const errorMessage = Array.isArray(errorData.error)
-                    ? errorData.error.map(e => `${e.loc.join('.')}: ${e.msg}`).join('\n')
-                    : (errorData.error || 'API request failed');
-                throw new Error(errorMessage);
+            
+            // Handle successful responses (2xx status codes)
+            if (response.ok) {
+                if (response.status === 204) { // No content, often indicates successful deletion
+                    return {}; // Return an empty object for successful no-content responses
+                }
+                // For other 2xx responses, parse JSON
+                return await response.json();
             }
+            
+            // Handle error responses (non-2xx status codes)
+            const errorData = await response.json(); // Attempt to parse error data
+            console.error(`API Error Response: Status=${response.status}, Data=`, errorData); // Log status and data
+            
+            // Use detailed Pydantic error if available, or a generic message
+            const errorMessage = Array.isArray(errorData.error)
+                ? errorData.error.map(e => `${e.loc.join('.')}: ${e.msg}`).join('\n')
+                : (errorData.error || `API request failed with status ${response.status}`);
+            
+            throw new Error(errorMessage);
             return await response.json();
         } catch (error) {
             console.error(`API Error (${method} ${url}):`, error);
@@ -54,6 +66,15 @@ window.wonderPlanner.modals = {
             modal.classList.add('hidden');
         });
     }
+};
+
+// Utility function to get color based on difficulty
+window.wonderPlanner.getDifficultyColor = (difficulty) => {
+    // Difficulty is 1-10
+    // Hue goes from Green (120) to Red (0)
+    // Scale 1-10 to 0-119 for hue
+    const hue = 120 - (difficulty - 1) * (120 / 9); // Interpolate hue from 120 to 0
+    return `hsl(${hue}, 80%, 45%)`; // Adjust saturation and lightness as needed
 };
 
 document.addEventListener('DOMContentLoaded', () => {
