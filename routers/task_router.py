@@ -24,13 +24,13 @@ class TaskRouter(AbstractRouter):
         self.router.add_url_rule(
             "/create/task/",
             view_func=self.task_controller.create_task,
-            methods=["GET", "POST"],
+            methods=["POST"],
             endpoint="create_task"
         )
         self.router.add_url_rule(
             "/create/event/",
             view_func=self.task_controller.create_event,
-            methods=["GET", "POST"],
+            methods=["POST"],
             endpoint="create_event"
         )
         # API
@@ -39,6 +39,36 @@ class TaskRouter(AbstractRouter):
             view_func=self.task_controller.get_task_details,
             methods=["GET"],
             endpoint="get_task_details"
+        )
+        self.app.add_url_rule(
+            "/api/task/<int:task_id>",
+            view_func=self.task_controller.update_task_api,
+            methods=["PUT"],
+            endpoint="update_task"
+        )
+        self.app.add_url_rule(
+            "/api/task/<int:task_id>",
+            view_func=self.task_controller.delete_task_api,
+            methods=["DELETE"],
+            endpoint="delete_task"
+        )
+        self.app.add_url_rule(
+            "/api/event/<int:event_id>",
+            view_func=self.task_controller.get_event_details,
+            methods=["GET"],
+            endpoint="get_event_details"
+        )
+        self.app.add_url_rule(
+            "/api/event/<int:event_id>",
+            view_func=self.task_controller.update_event_api,
+            methods=["PUT"],
+            endpoint="update_event"
+        )
+        self.app.add_url_rule(
+            "/api/event/<int:event_id>",
+            view_func=self.task_controller.delete_event_api,
+            methods=["DELETE"],
+            endpoint="delete_event"
         )
         self.app.add_url_rule(
             "/api/task/check",

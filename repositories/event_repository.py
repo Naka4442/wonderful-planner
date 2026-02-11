@@ -29,6 +29,18 @@ class EventRepository(AbstractRepository):
         ).all()
         return [EventSchema.model_validate(event) for event in events]
     
+    def update(self, event_id: int, event_data: "EventUpdateDto") -> Optional[EventSchema]:
+        event = self.db.query(Event).filter(Event.id == event_id).first()
+        if not event:
+            return None
+
+        for key, value in event_data.model_dump(exclude_unset=True).items():
+            setattr(event, key, value)
+
+        self.db.commit()
+        self.db.refresh(event)
+        return EventSchema.model_validate(event)
+
     def delete(self, event_id: int) -> None:
         event = self.db.query(Event).filter(Event.id == event_id).first()
         if event:

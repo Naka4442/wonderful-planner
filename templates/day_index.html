@@ -4,7 +4,7 @@
 {% block header %}Дневное планирование{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/day_index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/schedule.css') }}">
 <style>
     /* Дополнительные стили для модальных окон */
     .modal-cancel {
@@ -40,9 +40,17 @@
 <div class="dashboard">
     <!-- Верхняя панель управления -->
     <div class="control-panel">
-        <div class="date-selector">
-            <i class="fas fa-calendar-alt"></i>
-            <input type="date" id="select-day" class="date-picker" value="{{ selected_date }}">
+        <div class="date-selector day-navigation">
+            <a href="#" class="nav-btn" data-action="previous-day">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <div class="date-picker-wrapper">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="select-day" class="date-picker" value="{{ selected_date }}">
+            </div>
+            <a href="#" class="nav-btn" data-action="next-day">
+                <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
         
         <div class="view-switcher">
@@ -57,15 +65,17 @@
         </div>
         
         <div class="action-buttons">
-            <a href="{{ url_for('tasks.create_task') }}" class="create-btn">
+            <button class="create-btn" data-action="create-task">
                 <i class="fas fa-plus-circle"></i>
                 <span>Новая задача</span>
-            </a>
-            <a href="{{ url_for('tasks.create_event') }}" class="create-btn btn-secondary">
+            </button>
+            <button class="create-btn btn-secondary" data-action="create-event">
                 <i class="fas fa-calendar-plus"></i>
                 <span>Новое событие</span>
-            </a>
+            </button>
         </div>
+        
+
     </div>
 
     <!-- Компактная статистика -->
@@ -257,6 +267,7 @@
                                             left: 10px;
                                             width: calc(50% - 15px);"
                                      data-task-id="{{ task_data.task.id }}"
+                                     data-action="show-details"
                                      title="{{ task_data.task.title }} - {{ task_data.start_datetime.strftime('%H:%M') }} ({{ task_data.duration_minutes }} мин)">
                                     <div class="calendar-item-content">
                                         <div class="item-title">{{ task_data.task.title }}</div>
@@ -290,6 +301,7 @@
                                             left: calc(50% + 5px);
                                             width: calc(50% - 15px);"
                                      data-event-id="{{ event_data.event.id }}"
+                                     data-action="show-event-details"
                                      title="{{ event_data.event.title }} - {{ event_data.start_datetime.strftime('%H:%M') }}{% if event_data.end_datetime %} до {{ event_data.end_datetime.strftime('%H:%M') }}{% endif %}">
                                     <div class="calendar-item-content">
                                         <div class="item-title">{{ event_data.event.title }}</div>
@@ -355,10 +367,6 @@
                                         Сложность {{ task.difficulty }}
                                     </span>
                                 </div>
-                                <label class="task-checkbox">
-                                    <input type="checkbox" class="task-complete-toggle">
-                                    <span class="checkmark"></span>
-                                </label>
                             </div>
                             
                             {% if task.description %}
@@ -382,7 +390,10 @@
                                     </span>
                                 </div>
                                 <div class="task-actions">
-                                    <button class="btn-small btn-info" onclick="showTaskDetails({{ task.id }})">
+                                    <button class="btn-small btn-success" data-action="show-complete-modal-button" data-task-id="{{ task.id }}" title="Завершить задачу">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn-small btn-info" data-action="show-details" data-task-id="{{ task.id }}" title="Детали задачи">
                                         <i class="fas fa-info-circle"></i>
                                     </button>
                                 </div>
@@ -504,6 +515,14 @@
                                         {% endif %}
                                     </span>
                                 </div>
+                                <div class="task-actions">
+                                    <button class="btn-small btn-edit" data-action="edit-event">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" data-action="delete-event">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                                 <div class="task-meta">
                                     {% if event.difficulty > 1 %}
                                     <span class="task-meta-item">
@@ -534,101 +553,12 @@
 {% endblock %}
 
 {% block modals %}
-<!-- Модальное окно завершения задачи -->
-<div class="modal-overlay hidden" id="complete-modal">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3><i class="fas fa-flag-checkered"></i> Завершение задачи</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        
-        <div class="modal-body">
-            <div class="task-preview">
-                <h4 id="modal-task-title"></h4>
-                <p id="modal-task-description"></p>
-                <div class="task-info-row">
-                    <span class="task-info-item">
-                        <i class="fas fa-signal"></i>
-                        Сложность: <span id="modal-task-difficulty"></span>
-                    </span>
-                    <span class="task-info-item">
-                        <i class="far fa-clock"></i>
-                        Планируемое время: <span id="modal-task-planned"></span> мин
-                    </span>
-                </div>
-            </div>
-            
-            <div class="time-input-section">
-                <h4><i class="fas fa-stopwatch"></i> Фактическое время выполнения</h4>
-                <div class="time-input-group">
-                    <div class="time-input">
-                        <label for="time-hours">Часы</label>
-                        <input type="number" id="time-hours" min="0" max="23" placeholder="0" value="0">
-                    </div>
-                    <div class="time-separator">:</div>
-                    <div class="time-input">
-                        <label for="time-minutes">Минуты</label>
-                        <input type="number" id="time-minutes" min="0" max="59" placeholder="0" value="0">
-                    </div>
-                    <div class="time-total">
-                        <span id="total-minutes">0 минут</span>
-                    </div>
-                </div>
-                
-                <div class="time-suggestions">
-                    <span class="suggestion-label">Быстрый выбор:</span>
-                    <button class="time-suggestion" data-minutes="15">15 мин</button>
-                    <button class="time-suggestion" data-minutes="30">30 мин</button>
-                    <button class="time-suggestion" data-minutes="45">45 мин</button>
-                    <button class="time-suggestion" data-minutes="60">1 час</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn-secondary modal-cancel">Отмена</button>
-            <button class="btn-primary" id="complete-task-btn">
-                <i class="fas fa-check"></i>
-                Завершить задачу
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно успеха -->
-<div class="modal-overlay hidden" id="success-modal">
-    <div class="modal-container modal-success">
-        <div class="modal-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h3>Задача завершена!</h3>
-        <p>Отличная работа! Задача успешно отмечена как выполненная.</p>
-        <button class="btn-primary modal-ok">Продолжить</button>
-    </div>
-</div>
-
-<!-- Модальное окно деталей задачи -->
-<div class="modal-overlay hidden" id="task-details-modal">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3><i class="fas fa-info-circle"></i> Детали задачи</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        
-        <div class="modal-body" id="task-details-content">
-            <!-- Заполняется JavaScript -->
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn-secondary modal-cancel">Закрыть</button>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
-<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
 <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/day_view.js') }}"></script>
 {% endblock %}

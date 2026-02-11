@@ -29,6 +29,10 @@ class TaskServices:
     def get_task_by_id(self, task_id: int) -> Optional[TaskSchema]:
         """Получить задачу по ID"""
         return self.task_repo.get_by_id(task_id)
+
+    def update_task(self, task_id: int, task_data: "TaskUpdateDto") -> Optional[TaskSchema]:
+        """Обновить задачу"""
+        return self.task_repo.update(task_id, task_data)
     
     def delete_task(self, task_id: int) -> None:
         """Удалить задачу"""
@@ -38,6 +42,14 @@ class TaskServices:
     def create_event(self, event_data: EventCreateDto) -> EventSchema:
         """Создать новое событие"""
         return self.event_repo.create(event_data)
+
+    def get_event_by_id(self, event_id: int) -> Optional[EventSchema]:
+        """Получить событие по ID"""
+        return self.event_repo.get_by_id(event_id)
+
+    def update_event(self, event_id: int, event_data: "EventUpdateDto") -> Optional[EventSchema]:
+        """Обновить событие"""
+        return self.event_repo.update(event_id, event_data)
     
     def delete_event(self, event_id: int) -> None:
         """Удалить событие"""

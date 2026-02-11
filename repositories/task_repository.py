@@ -67,6 +67,18 @@ class TaskRepository(AbstractRepository):
         self.db.commit()
         self.db.refresh(task)
         return TaskSchema.model_validate(task)
+
+    def update(self, task_id: int, task_data: "TaskUpdateDto") -> Optional[TaskSchema]:
+        task = self.db.query(Task).filter(Task.id == task_id).first()
+        if not task:
+            return None
+
+        for key, value in task_data.model_dump(exclude_unset=True).items():
+            setattr(task, key, value)
+
+        self.db.commit()
+        self.db.refresh(task)
+        return TaskSchema.model_validate(task)
     
     def delete(self, task_id: int) -> None:
         task = self.db.query(Task).filter(Task.id == task_id).first()

@@ -46,3 +46,14 @@ class TaskCreateDto(BaseModel):
     difficulty: int
     supposed_time: int
     user_id: int
+    start_time: datetime | None = None
+
+
+
+class TaskUpdateDto(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    difficulty: int | None = None
+    supposed_time: int | None = None
+    start_time: datetime | None = None
+    is_done: bool | None = None

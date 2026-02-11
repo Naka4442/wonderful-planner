@@ -1,23 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile/signin.mobile.css') }}">
-    <title>Вход</title>
-</head>
-<body>
-    <main>
-        <form action="" method="post">
-            <h1>Вход</h1>
-            <input type="text" name="email" id="" placeholder="Почта">
-            <input type="password" name="password" placeholder="Пароль">
-            <button type="submit">Вход</button>
-            <a href="signup">Регистрация</a>
-        </form>
-        {% if error %} <p> {{ error }} </p> {% endif %}
+{% extends "base.html" %}
 
-    </main>
-</body>
-</html>
+{% block title %}Вход | WonderfullPlanner{% endblock %}
+{% block header %}Вход в аккаунт{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-form-wrapper">
+        <div class="auth-form-header">
+            <h2>С возвращением!</h2>
+            <p>Войдите, чтобы продолжить планирование.</p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form action="{{ url_for('users.signin') }}" method="post">
+            <div class="form-group">
+                <label for="email">Электронная почта</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-auth">Войти</button>
+        </form>
+
+        <div class="auth-switch-link">
+            <p>Нет аккаунта? <a href="{{ url_for('users.signup') }}">Зарегистрироваться</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

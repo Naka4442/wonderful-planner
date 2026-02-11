@@ -60,3 +60,20 @@ class EventCreateDto(BaseModel):
         if v and 'start_time' in info.data and v <= info.data['start_time']:
             raise ValueError('End time must be after start time')
         return v
+
+
+class EventUpdateDto(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    difficulty: int | None = Field(None, ge=1, le=10)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    is_repeated: bool | None = None
+    repeat_weekday: int | None = Field(None, ge=0, le=6)
+    
+    @field_validator('end_time')
+    @classmethod
+    def validate_end_time(cls, v, info):
+        if v and 'start_time' in info.data and info.data['start_time'] and v <= info.data['start_time']:
+            raise ValueError('End time must be after start time')
+        return v
